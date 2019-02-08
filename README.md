@@ -34,7 +34,7 @@ The 'BLAST_parser_TE_families.py' script parses these results and stores the ID 
 ## Align non-nested flanking sequences to the reference genome
 The genome of the Williams 82 soybean cultivar has been sequenced and uploaded to NCBI. We can align our non-nested flanking sequences directly to the reference genome. To do this, it may be easier to download the reference genome as a FASTA file, convert it into a BLAST database and use the non-nested flanking sequence FASTA file as a query. The 'BLAST_parser_ref_seq.py' script was written to parse these results. It outputs the chromosome and position of a top alignment from each non-nested flanking sequence, along with whether or not the sequence aligned within 10kbp of a gene. The 'chromosome_ideogram.R' script takes these positions and plots them, giving a visualization that looked like the following.
 
-![non-nested gMR30](https://drive.google.com/file/d/1m0JifKrCeHgf9nnbYoHsQQVA8AUWtJyW/preview)
+![non-nested gMR30](https://drive.google.com/file/d/1m0JifKrCeHgf9nnbYoHsQQVA8AUWtJyW)
       
 ## Generate a list of "known" locations for your transposon family of interest
 It would be helpful to know if our amplicon libraries contain all of the previously annotated family members. It is also very likely that the current reference genome does not have every family member, and we would like to know if our methods have uncovered new members/integration sites. We have a database containing the names and positions of each member of each retrotransposon family (with sequences and descriptions), but the positions are for the old soybean reference assembly. We need to translate these positions to the new assembly! 
