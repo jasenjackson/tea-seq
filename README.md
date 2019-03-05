@@ -1,4 +1,4 @@
-# Sequencing and Analysis of Transposable-element Insertional Polymorphisms in Soybean
+# Sequencing and Analysis of Transposable-element Insertional Polymorphisms in Soybean [work in progress]
 This document contains the documentation for the analysis of transposable-element anchored PCR sequencing (tea-seq) data obtained by the method described in the following document:
 * https://docs.google.com/document/d/1z6l_yjRtnGkOStGcOwBBOVk0gpyeZiGODGK2Vp9sF5M/edit?usp=sharing
 
