@@ -251,10 +251,9 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 
 def remove_duplicates(library_name, run_name):
 		#open trimmed file & remove duplicates
-		# TODO: make more general?
 		trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
 		trimmed_file = open(trimmed_file_path, 'r')
-		print(lt+"\tRemoving duplicates from "+library_name+".trimmed.fastq...")
+		print(lt+"\tRemoving dups from "+library_name+".trimmed.fastq...")
 		duplicates_removed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.duplicates_removed.fastq"
 		duplicates_removed = open(duplicates_removed_file_path, 'a')
 
@@ -270,15 +269,18 @@ def remove_duplicates(library_name, run_name):
 
 			# compare last 20bp of sequences to "seen" set
 			sequence_end = sequenceLine[-20:] # make variable
+			sequence_len = len(sequenceLine)
+			
 			if sequence_end not in unique_set: # TODO: compare hamming distances
 				# add sequenceLine to duplicates_removed file
 				new_entry = header+sequenceLine
 				duplicates_removed.write(new_entry)
 				# add sequence_end to unique_set
-				unique_set.append(sequence_end)
+				seqEndLen = [sequence_end, sequence_len]
+				unique_set.append(seqEndLen)
 			else:
 				duplicate_count += 1
-
+		print(unique_set[1:5])
 		print(lt+"\t\tdups: " + str(duplicate_count))
 		print(lt+"\t\tunique: " + str(len(unique_set)))
 
