@@ -270,7 +270,7 @@ def remove_duplicates(library_name, run_name):
 			
 			if sequence_end not in unique_set: # TODO: compare hamming distances
 				duplicates_removed.write(header+sequenceLine)
-				unique_set.append(sequenceEnd)
+				unique_set.append(sequence_end)
 			else:
 				duplicate_count += 1
 		print(unique_set[1:5])
