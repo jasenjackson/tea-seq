@@ -5,7 +5,7 @@ import os.path
 import sys
 from HL2_params import *
 
-#Returns a list of Kmers that cover "threshold" % of the primer
+#Return a list of Kmers that cover "threshold" % of the primer
 def kmers_threshold(primer, threshold):
 
 	k = int(round(threshold*len(primer))) #k_min = 0.9*primer.length
