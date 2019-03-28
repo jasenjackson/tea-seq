@@ -249,7 +249,7 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 	print(lt+"\t\t"+file_path+" was succesfully trimmed and filtered using: "+ features_used)
 	print(lt+"\t\t"+ str(count) +" trimmed reads added to " +trimmed_file_path)
 
-def remove_duplicates(library_name, run_name):
+def remove_duplicates2(library_name, run_name):
 		#open trimmed file & remove duplicates
 		trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
 		trimmed_file = open(trimmed_file_path, 'r')
@@ -276,6 +276,36 @@ def remove_duplicates(library_name, run_name):
 		print(unique_set[1:5])
 		print(lt+"\t\tdups: " + str(duplicate_count))
 		print(lt+"\t\tunique: " + str(len(unique_set)))
+		
+def remove_duplicates(library_name, run_name):
+		#open trimmed file & remove duplicates
+		trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
+		trimmed_file = open(trimmed_file_path, 'r')
+		print(lt+"\tRemoving dups from "+library_name+".trimmed.fastq...")
+		duplicates_removed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.duplicates_removed.fastq"
+		duplicates_removed = open(duplicates_removed_file_path, 'a')
+
+		unique_set = [] #collect unique seqs
+		duplicate_count = 0
+
+		while True:
+			header = trimmed_file.readline()
+			sequenceLine = trimmed_file.readline()
+			if not sequenceLine: break
+
+			# grab last 20bp
+			sequence_end = sequenceLine[-20:] # make variable
+			
+			# compare to "seen" set
+			a = [repseq[-20:] for repseq in unique_set] #<- list of -20 ends.
+			b = [(repseq[-20:] == sequence_end) for repseq in unique_set] #<- T/F matching
+			next((s for s in mylist if sub in s), None)
+			c = next([repseq[-20:] == sequence_end for repseq in unique_set],None)
+			repseq = next((s for s in rep_ends_set if sequence_end in s), None) #<- rep. end matching sequence end
+			if repseq is not None and len(sequenceLine) > 
+				
+			# replace curruent representative sequence if not longest
+			if repseq is not None and len(sequenceLine) >
 
 
 def create_library(r1, r2, library_name, run_name):
