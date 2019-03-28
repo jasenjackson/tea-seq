@@ -263,21 +263,15 @@ def remove_duplicates(library_name, run_name):
 		while True:
 			header = trimmed_file.readline()
 			sequenceLine = trimmed_file.readline()
-			#plusLine = trimmed_file.readline()
-			#qualityScore = trimmed_file.readline()
 			if not sequenceLine: break
 
 			# compare last 20bp of sequences to "seen" set
 			sequence_end = sequenceLine[-20:] # make variable
-			sequence_len = len(sequenceLine)
 			
 			if sequence_end not in unique_set: # TODO: compare hamming distances
-				# add sequenceLine to duplicates_removed file
-				new_entry = header+sequenceLine
-				duplicates_removed.write(new_entry)
+				duplicates_removed.write(header+sequenceLine)
 				# add sequence_end to unique_set
-				seqEndLen = [sequence_end, sequence_len]
-				unique_set.append(seqEndLen)
+				unique_set.append(sequenceLine)
 			else:
 				duplicate_count += 1
 		print(unique_set[1:5])
