@@ -26,7 +26,7 @@ def hamming(s1, s2):
     assert len(s1) == len(s2)
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
 
-def merge_reads(r1,  r2, library_name, run_name, bin_dir):
+def merge_reads(r1,  r2, library_name, run_name, bin, data):
 
 	#If contig has already been merged, skip this step.
 	if os.path.exists('results/'+run_name+"/"+library_name+'/out.extendedFrags.fastq'):
@@ -37,7 +37,7 @@ def merge_reads(r1,  r2, library_name, run_name, bin_dir):
 		#run FLASH from the bin directory with 250bp maximum overlap AND interleaved output
 		output_directory = "results/"+run_name+"/"+library_name
 		print("\tMerging forward and reverse reads for " + library_name+"...")
-		os.system(BIN_DIR + "/./flash " +DATA_DIR+"/"+r1+ " " +DATA_DIR+"/"+r2
+		os.system(bin + "/./flash " +data+"/"+r1+ " " +data+"/"+r2
 		+ " -d " + output_directory + " -M 250 --interleaved-output > results/"+
 		run_name+"/"+library_name+"/flash.log")
 		print("\t\tPair-end alignment console output directed to results/"+run_name+"/"+library_name+"/flash.log")
