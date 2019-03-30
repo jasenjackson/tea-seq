@@ -30,26 +30,26 @@ def merge_reads(r1,  r2, library_name, run_name):
 
 	#If contig has already been merged, skip this step.
 	if os.path.exists('results/'+run_name+"/"+library_name+'/out.extendedFrags.fastq'):
-		print(lt+"\t"+library_name+' has already been merged. Skipping to next step!')
+		print("\t"+library_name+' has already been merged. Skipping to next step!')
 
 	#otherwise merge forward and reverse read files for the library
 	else:
 		#run FLASH from the bin directory with 250bp maximum overlap AND interleaved output
 		output_directory = "results/"+run_name+"/"+library_name
-		print(lt+"\tMerging forward and reverse reads for " + library_name+"...")
+		print("\tMerging forward and reverse reads for " + library_name+"...")
 		os.system(BIN_DIR + "/./flash " +DATA_DIR+"/"+r1+ " " +DATA_DIR+"/"+r2
 		+ " -d " + output_directory + " -M 250 --interleaved-output > results/"+
 		run_name+"/"+library_name+"/flash.log")
-		print(lt+"\t\tPair-end alignment console output directed to results/"+run_name+"/"+library_name+"/flash.log")
+		print("\t\tPair-end alignment console output directed to results/"+run_name+"/"+library_name+"/flash.log")
 
 def collate(library_name, run_name):
 
 	#If combined file has already been made, skip this step
 	if os.path.exists('results/'+run_name+'/'+library_name+'/'+library_name+".combined.fastq"):
-		print(lt+"\t"+library_name+' already has a combined fastq file. Skipping to next step!')
+		print("\t"+library_name+' already has a combined fastq file. Skipping to next step!')
 
 	else:
-		print(lt+"\tCollating assembled and unassembled reads into combined file..")
+		print("\tCollating assembled and unassembled reads into combined file..")
 		#create file that combines assembled and unassembled reads
 		combined_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".combined.fastq"
 		combined_file = open(combined_file_path, 'a')
@@ -60,7 +60,7 @@ def collate(library_name, run_name):
 		for line in assembled_file.readlines():
 			combined_file.write(line)
 		assembled_file.close()
-		print(lt+"\t\t"+assembled_file_path+" was succesfully added to "+combined_file_path)
+		print("\t\t"+assembled_file_path+" was succesfully added to "+combined_file_path)
 
 		#dump all of the contents of unassembled into combined files
 		unassembled_file_path = "results/"+run_name+'/'+library_name+"/out.notCombined.fastq"
@@ -68,14 +68,14 @@ def collate(library_name, run_name):
 		for line in unassembled_file.readlines():
 			combined_file.write(line)
 			unassembled_file.close()
-		print(lt+"\t\t"+unassembled_file_path+" was succesfully added to "+combined_file_path)
+		print("\t\t"+unassembled_file_path+" was succesfully added to "+combined_file_path)
 
 def feature_count(features, library_name, run_name):
 
 	#open library FASTQ file
 	file_path = "results/"+run_name+'/'+library_name+"/out.extendedFrags.fastq"
 	library_file = open(file_path, 'r')
-	print(lt+"\tSearching "+library_name+" for provided filter sequences...")
+	print("\tSearching "+library_name+" for provided filter sequences...")
 
 	#create feature_count file
 	feature_count_file_path = "results/"+run_name+"/"+library_name+"/feature_count.csv"
@@ -109,13 +109,13 @@ def feature_count(features, library_name, run_name):
 			feature_percentage = "0%"
 
 		#Primer: X reads (0%)
-		print(lt+"\t\t"+feature_name+": "+str(feature_count)+" reads ("+str(feature_percentage)+") k="+str(k))
+		print("\t\t"+feature_name+": "+str(feature_count)+" reads ("+str(feature_percentage)+") k="+str(k))
 
 		#add to row to feature table csv
 		feature_table_entry = feature_table_entry + str(feature_count) + "," + str(feature_percentage) + ","
 
 	#add entire feature row for library
-	print(lt+"\t\tFeature table entry: " + feature_table_entry)
+	print("\t\tFeature table entry: " + feature_table_entry)
 	feature_count_file.write(feature_table_entry+'\n')
 
 
@@ -170,7 +170,7 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 	#open library FASTQ file & create trimmed file
 	file_path = "results/"+run_name+'/'+library_name+"/out.extendedFrags.fastq"
 	library_file = open(file_path, 'r')
-	print(lt+"\tTrimming "+library_name+" with provided feature sequences...")
+	print("\tTrimming "+library_name+" with provided feature sequences...")
 	trimmed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.fastq"
 	trimmed_file = open(trimmed_file_path, 'a')
 
@@ -219,14 +219,14 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 		if (type=="remove" or type == "adapter" or type == "element"):
 			features_used = features_used + feat[0] + ", "
 	features_used = features_used[:-2]
-	print(lt+"\t\t"+file_path+" was succesfully trimmed and filtered using: "+ features_used)
-	print(lt+"\t\t"+ str(count) +" trimmed reads added to " +trimmed_file_path)
+	print("\t\t"+file_path+" was succesfully trimmed and filtered using: "+ features_used)
+	print("\t\t"+ str(count) +" trimmed reads added to " +trimmed_file_path)
 
 def remove_duplicates2(library_name, run_name):
 		#open trimmed file & remove duplicates
 		trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
 		trimmed_file = open(trimmed_file_path, 'r')
-		print(lt+"\tRemoving dups from "+library_name+".trimmed.fastq...")
+		print("\tRemoving dups from "+library_name+".trimmed.fastq...")
 		duplicates_removed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.duplicates_removed.fastq"
 		duplicates_removed = open(duplicates_removed_file_path, 'a')
 
@@ -247,14 +247,14 @@ def remove_duplicates2(library_name, run_name):
 			else:
 				duplicate_count += 1
 		print(unique_set[1:5])
-		print(lt+"\t\tdups: " + str(duplicate_count))
-		print(lt+"\t\tunique: " + str(len(unique_set)))
+		print("\t\tdups: " + str(duplicate_count))
+		print("\t\tunique: " + str(len(unique_set)))
 
 def remove_duplicates(library_name, run_name):
 		#open trimmed file & remove duplicates
 		trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
 		trimmed_file = open(trimmed_file_path, 'r')
-		print(lt+"\tRemoving dups from "+library_name+".trimmed.fastq...")
+		print("\tRemoving dups from "+library_name+".trimmed.fastq...")
 		duplicates_removed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.duplicates_removed.fastq"
 		duplicates_removed = open(duplicates_removed_file_path, 'a')
 
