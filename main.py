@@ -34,7 +34,7 @@ def create_paths(run_name):
 def create_library(r1, r2, library_name, run_name):
 
 	#if the library ('results/run_name/library_name') already exists, move to next library.
-	if os.path.exists('results/'+run_name+"/"+library_name):
+	if os.path.exists('results/'+run_name+"/"+library_name+"~"):
 		print(library_name + ' already exists... skipping!')
 
 	#Otherwise, make a library folder and fill it up with relevant library files

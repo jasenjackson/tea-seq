@@ -155,55 +155,57 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 	library_file = open(file_path, 'r')
 	print("\tTrimming "+library_name+" with provided feature sequences...")
 	trimmed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.fastq"
-	trimmed_file = open(trimmed_file_path, 'a')
+	if os.path.exists(trimmed_file_path):break
+	else:
+		trimmed_file = open(trimmed_file_path, 'a')
 
-	#iterate through every line in the library sequence file and compare to every filter sequence
-	has_adapter, has_element, has_killSequence, is_trimmedLine = False, False, False, False
-	trimmed_line = ""
-	count, adapter_pos, adapter_dist, element_pos, element_dist = 0, -1, -1, -1, -1
-	while True: #for each line in the file
-		header = library_file.readline()
-		sequenceLine = library_file.readline()
-		plusLine = library_file.readline()
-		qualityScore = library_file.readline()
-		if not qualityScore: break
-		has_adapter, has_element, has_killSequence = False, False, False
+		#iterate through every line in the library sequence file and compare to every filter sequence
+		has_adapter, has_element, has_killSequence, is_trimmedLine = False, False, False, False
+		trimmed_line = ""
+		count, adapter_pos, adapter_dist, element_pos, element_dist = 0, -1, -1, -1, -1
+		while True: #for each line in the file
+			header = library_file.readline()
+			sequenceLine = library_file.readline()
+			plusLine = library_file.readline()
+			qualityScore = library_file.readline()
+			if not qualityScore: break
+			has_adapter, has_element, has_killSequence = False, False, False
 
-		#interrogate sequenceLine for important sequences
+			#interrogate sequenceLine for important sequences
+			for feat in features:
+				feature, threshold, type = feat[1], feat[2], feat[3]
+				if (type=="remove") and (feature in sequenceLine):
+					has_killSequence = True
+					break
+				if (type=="adapter"): # what ab RC adapter? Should be reverse orientation..
+					adapter_pos, adapter_dist = slidingSearch(sequenceLine, feature, 6, 2)
+					adapter_len = len(feature)
+					if (adapter_pos != -1): has_adapter = True
+				if (type=="element"):
+					element_pos, element_dist = slidingSearch(sequenceLine, feature, 3, 1)
+					if (element_pos != -1):
+						has_element = True
+
+			# trim and store eligible sequences
+			if ((has_killSequence==False) and (has_adapter==True) and (has_element==True)):
+				count += 1
+				#print(count)
+				adapter_end = adapter_pos+adapter_len
+				trimmed_line = sequenceLine[adapter_end:element_pos] + '\n'
+				#qualityScore = qualityScore[adapter_end:element_pos] + '\n'
+				fasta_header = ">"+header
+				new_entry = fasta_header+trimmed_line
+				trimmed_file.write(new_entry)
+
+		#print console output for trimmed reads process
+		features_used = ""
 		for feat in features:
-			feature, threshold, type = feat[1], feat[2], feat[3]
-			if (type=="remove") and (feature in sequenceLine):
-				has_killSequence = True
-				break
-			if (type=="adapter"): # what ab RC adapter? Should be reverse orientation..
-				adapter_pos, adapter_dist = slidingSearch(sequenceLine, feature, 6, 2)
-				adapter_len = len(feature)
-				if (adapter_pos != -1): has_adapter = True
-			if (type=="element"):
-				element_pos, element_dist = slidingSearch(sequenceLine, feature, 3, 1)
-				if (element_pos != -1):
-					has_element = True
-
-		# trim and store eligible sequences
-		if ((has_killSequence==False) and (has_adapter==True) and (has_element==True)):
-			count += 1
-			#print(count)
-			adapter_end = adapter_pos+adapter_len
-			trimmed_line = sequenceLine[adapter_end:element_pos] + '\n'
-			#qualityScore = qualityScore[adapter_end:element_pos] + '\n'
-			fasta_header = ">"+header
-			new_entry = fasta_header+trimmed_line
-			trimmed_file.write(new_entry)
-
-	#print console output for trimmed reads process
-	features_used = ""
-	for feat in features:
-		type = feat[3]
-		if (type=="remove" or type == "adapter" or type == "element"):
-			features_used = features_used + feat[0] + ", "
-	features_used = features_used[:-2]
-	print("\t\t"+file_path+" was succesfully trimmed and filtered using: "+ features_used)
-	print("\t\t"+ str(count) +" trimmed reads added to " +trimmed_file_path)
+			type = feat[3]
+			if (type=="remove" or type == "adapter" or type == "element"):
+				features_used = features_used + feat[0] + ", "
+		features_used = features_used[:-2]
+		print("\t\t"+file_path+" was succesfully trimmed and filtered using: "+ features_used)
+		print("\t\t"+ str(count) +" trimmed reads added to " +trimmed_file_path)
 
 def remove_duplicates2(library_name, run_name):
 		#open trimmed file & remove duplicates
