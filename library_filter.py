@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
-Title: Library filter functions (main.py)
+Title: Library filter functions (library_filter.py)
 Author: Jasen M. Jackson, Loyola '19
 This script contains functions necessary for filtering TRAPseq (teaseq???) libraries.
 '''
@@ -52,101 +52,6 @@ def collate(library_name, run_name):
 			combined_file.write(line)
 			unassembled_file.close()
 		print("\t\t"+unassembled_file_path+" was succesfully added to "+combined_file_path)
-
-def feature_count(features, library_name, run_name):
-
-	#open library FASTQ file
-	file_path = "results/"+run_name+'/'+library_name+"/out.extendedFrags.fastq"
-	library_file = open(file_path, 'r')
-	print("\tSearching "+library_name+" for provided filter sequences...")
-
-	#create feature_count file
-	feature_count_file_path = "results/"+run_name+"/"+library_name+"/feature_count.csv"
-	feature_count_file = open(feature_count_file_path, 'a')
-	feature_table_entry=""
-
-	#iterate through each filter sequence and add all matching reads to new file
-	for seq in features:
-
-		#get name, sequence, match threshold, kmers and appropriate k parameter from each feature
-		feature_name, sequence, match_threshold = seq[0], seq[1], seq[2]
-		kmers, k = kmers_threshold(sequence, match_threshold)
-
-		#iterate through every line in the library sequence file
-		i = 0 #line number
-		feature_count = 0
-		for line in library_file:
-			i = i+1
-			if ((i+2)%4 == 0): #i.e: for every "Sequence" line
-				for kmer in kmers: #search all kmers
-					if kmer in line: #if kmer is in the read
-						feature_count = feature_count + 1
-						break
-		library_file.seek(0) #return pointer to the top of the library file, count next feature
-
-		#compute percentage of reads that matched
-		total_reads = (i/4)
-		if total_reads > 0: #avoid dividing by zero
-			feature_percentage = '{:0.3f}'.format((float(feature_count)/float(total_reads)))
-		else:
-			feature_percentage = "0%"
-
-		#Primer: X reads (0%)
-		print("\t\t"+feature_name+": "+str(feature_count)+" reads ("+str(feature_percentage)+") k="+str(k))
-
-		#add to row to feature table csv
-		feature_table_entry = feature_table_entry + str(feature_count) + "," + str(feature_percentage) + ","
-
-	#add entire feature row for library
-	print("\t\tFeature table entry: " + feature_table_entry)
-	feature_count_file.write(feature_table_entry+'\n')
-
-
-def kmerSearch(query, kmers, subject, threshold, direction):
-	min_length = threshold*len(query)
-	pos, offset, dist = 0, 0, 0
-	match, subQuery = "", ""
-
-	#search for location beginning w/ first kmer in kmers list
-	for kmer in kmers:
-		pos = subject.find(kmer)
-		if pos != -1 and direction=='f':
-			subQuery = query[offset:]
-			match = subject[pos:pos+len(subQuery)]
-			dist = hamming(match, subQuery)
-			if (dist <= MAXDIST and len(match) >= min_length):
-				return pos, pos+len(subQuery)
-		if pos != -1 and direction=='r':
-			kmers.reverse() # assumes left-to-right kmer orientation
-			subQuery = query[:len(query)-offset]
-			match_start = pos+len(kmer)-len(subQuery)
-			match_end = pos+len(kmer)
-			match = subject[match_start:match_end]
-			dist = hamming(match, subQuery)
-			if (dist <= MAXDIST and len(match) >= min_length):
-				return match_start, match_end
-		offset += 1
-	# if no qualifying match is found
-	return -1, -1
-
-
-#Returns starting position of best subject-query alignment.
-def slidingSearch(subject, query, maxdist, breakdist):
-    k = len(query) # kmers should be query length
-    curr_dist, match_start, lowest_obs_dist = 0, 0, k
-    #iterate through subject with sliding window of size k=len(query)
-    for i in range(0, len(subject)-k):
-        curr_dist = hamming(subject[i:i+k], query) #align subject & query
-        #print(subject[i:i+k]+" "+str(curr_dist))
-        if curr_dist < lowest_obs_dist: # update best match
-            lowest_obs_dist = curr_dist
-            match_start = i
-            if curr_dist <= breakdist: # Heuristic: if the match is "exceptional"
-                break
-    if lowest_obs_dist <= maxdist: # if the best match meets threshold requirements
-        return(match_start, lowest_obs_dist)
-    else:
-        return(-1, -1)
 
 def feature_trim(features, library_name, run_name): #feature count, filture, trim
 
@@ -206,34 +111,6 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 		features_used = features_used[:-2]
 		print("\t\t"+file_path+" was succesfully trimmed and filtered using: "+ features_used)
 		print("\t\t"+ str(count) +" trimmed reads added to " +trimmed_file_path)
-
-def remove_duplicates2(library_name, run_name):
-		#open trimmed file & remove duplicates
-		trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
-		trimmed_file = open(trimmed_file_path, 'r')
-		print("\tRemoving dups from "+library_name+".trimmed.fastq...")
-		duplicates_removed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.duplicates_removed.fastq"
-		duplicates_removed = open(duplicates_removed_file_path, 'a')
-
-		unique_set = [] #collect unique seqs
-		duplicate_count = 0
-
-		while True:
-			header = trimmed_file.readline()
-			sequenceLine = trimmed_file.readline()
-			if not sequenceLine: break
-
-			# compare last 20bp of sequences to "seen" set
-			sequence_end = sequenceLine[-20:] # make variable
-
-			if sequence_end not in unique_set: # TODO: compare hamming distances
-				duplicates_removed.write(header+sequenceLine)
-				unique_set.append(sequence_end)
-			else:
-				duplicate_count += 1
-		print(unique_set[1:5])
-		print("\t\tdups: " + str(duplicate_count))
-		print("\t\tunique: " + str(len(unique_set)))
 
 def remove_duplicates(library_name, run_name):
 		#open trimmed file & remove duplicates
