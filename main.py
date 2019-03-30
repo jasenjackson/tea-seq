@@ -11,21 +11,18 @@ import glob, os
 import os.path
 import sys
 from HL2_params import *
+from feature_search import *
 from library_filter import *
 
 def validate_parameters():
-    ''' validate params from params file '''
-	# check that the length of the fastq file lists are all equal (if creating a library)
-	if not (len(R1_FILES) == len(R2_FILES) == len(LIBS)):
-        print(lt+"ERROR: fastq file lists don't match in length")
+    if not (len(R1_FILES) == len(R2_FILES) == len(LIBS)):
+        print("ERROR: fastq file lists don't match in length")
         sys.exit()
-
-	# iterate through each feature sequence and store kmers/k
-	for seq in FEATURES:
-		#add kmers and k to sequence
-		sequence, match_threshold = seq[1], seq[2]
-		kmers = kmers_k(sequence, WORDSIZE)
-		seq.append(kmers)
+    for seq in FEATURES:
+        #add kmers and k to sequence
+        sequence, match_threshold = seq[1], seq[2]
+        kmers = kmers_k(sequence, WORDSIZE)
+        seq.append(kmers)
 
 def create_paths(run_name):
 	## create results directory and results/run_name/ if they don't exist
