@@ -11,6 +11,7 @@ import glob, os
 import os.path
 import sys
 from HL2_params import *
+from library_filter import *
 
 def create_library(r1, r2, library_name, run_name):
 

@@ -280,22 +280,16 @@ def remove_duplicates(library_name, run_name):
 
 		unique_set = [] #collect unique seqs
 		duplicate_count = 0
+		redundancy_map = dict()
 
 		while True:
 			header = trimmed_file.readline()
-			sequenceLine = trimmed_file.readline()
-			if not sequenceLine: break
+			seq = trimmed_file.readline()
+			if not seq: break
 
 			# grab last 20bp
-			sequence_end = sequenceLine[-20:] # make variable
+			new_key = seq[-20:] # make variable
+			new_len = len(seq)
 
-			# compare to "seen" set
-			a = [repseq[-20:] for repseq in unique_set] #<- list of -20 ends.
-			b = [(repseq[-20:] == sequence_end) for repseq in unique_set] #<- T/F matching
-			next((s for s in mylist if sub in s), None)
-			c = next([repseq[-20:] == sequence_end for repseq in unique_set],None)
-			repseq = next((s for s in rep_ends_set if sequence_end in s), None) #<- rep. end matching sequence end
-			if repseq is not None and len(sequenceLine)
-
-			# replace curruent representative sequence if not longest
-			if repseq is not None and len(sequenceLine): break
+			# if not in redundancy map, add it
+			# else, find longest
