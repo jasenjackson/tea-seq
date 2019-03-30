@@ -1,7 +1,7 @@
 #!/usr/bin/python
 '''
 Title: Main pipeline wrapper for TEA-seq (main.py)
-Author: Jasen M. Jackson, '19
+Author: Jasen M. Jackson, Loyola '19
 Date: 2/20/19-
 This script contains the main workflow for the TEA-seq pipeline.
 '''
@@ -17,8 +17,8 @@ def validate_parameters():
     ''' validate params from params file '''
 	# check that the length of the fastq file lists are all equal (if creating a library)
 	if not (len(R1_FILES) == len(R2_FILES) == len(LIBS)):
-        	print(lt+"ERROR: fastq file lists don't match in length")
-        	sys.exit()
+        print(lt+"ERROR: fastq file lists don't match in length")
+        sys.exit()
 
 	# iterate through each feature sequence and store kmers/k
 	for seq in FEATURES:
