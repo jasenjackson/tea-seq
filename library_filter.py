@@ -1,3 +1,7 @@
+import glob, os
+import os.path
+import sys
+
 #Return a list of Kmers that cover "threshold" % of the primerss
 def kmers_threshold(primer, threshold):
 
