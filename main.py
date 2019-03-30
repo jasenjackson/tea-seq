@@ -48,7 +48,7 @@ def create_library(r1, r2, library_name, run_name):
 	else:
 		os.makedirs('results/'+run_name+"/"+library_name)
 		print(lt+'Making ' + library_name + '...')
-		merge_reads(r1, r2, library_name, run_name)
+		merge_reads(r1, r2, library_name, run_name, BIN_DIR)
 		collate(library_name, run_name)
 		#feature_count(FEATURES, library_name, run_name)
 		feature_trim(FEATURES, library_name, run_name)

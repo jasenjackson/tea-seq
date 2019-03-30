@@ -26,7 +26,7 @@ def hamming(s1, s2):
     assert len(s1) == len(s2)
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
 
-def merge_reads(r1,  r2, library_name, run_name):
+def merge_reads(r1,  r2, library_name, run_name, bin_dir):
 
 	#If contig has already been merged, skip this step.
 	if os.path.exists('results/'+run_name+"/"+library_name+'/out.extendedFrags.fastq'):
