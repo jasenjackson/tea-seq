@@ -13,6 +13,20 @@ import sys
 from HL2_params import *
 from library_filter import *
 
+def validate_parameters():
+
+	# check that the length of the fastq file lists are all equal (if creating a library)
+	if not (len(R1_FILES) == len(R2_FILES) == len(LIBS)):
+        	print(lt+"ERROR: fastq file lists don't match in length")
+        	sys.exit()
+
+	# iterate through each feature sequence and store kmers/k
+	for seq in FEATURES:
+		#add kmers and k to sequence
+		sequence, match_threshold = seq[1], seq[2]
+		kmers = kmers_k(sequence, WORDSIZE)
+		seq.append(kmers)
+
 def create_library(r1, r2, library_name, run_name):
 
 	#if the library ('results/run_name/library_name') already exists, move to next library.
