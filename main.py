@@ -27,6 +27,17 @@ def validate_parameters():
 		kmers = kmers_k(sequence, WORDSIZE)
 		seq.append(kmers)
 
+
+def create_paths(run_name):
+
+	# create results directory if it does not exist.
+	if not os.path.exists("results"):
+		os.makedirs("results")
+
+	# create results/run_name/ directory, if it does not exist
+	if not os.path.exists('results/'+run_name):
+		os.makedirs('results/'+run_name)
+
 def create_library(r1, r2, library_name, run_name):
 
 	#if the library ('results/run_name/library_name') already exists, move to next library.

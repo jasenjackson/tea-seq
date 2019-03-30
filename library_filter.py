@@ -22,16 +22,6 @@ def hamming(s1, s2):
     assert len(s1) == len(s2)
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
 
-def create_paths(run_name):
-
-	# create results directory if it does not exist.
-	if not os.path.exists("results"):
-		os.makedirs("results")
-
-	# create results/run_name/ directory, if it does not exist
-	if not os.path.exists('results/'+run_name):
-		os.makedirs('results/'+run_name)
-
 def merge_reads(r1,  r2, library_name, run_name):
 
 	#If contig has already been merged, skip this step.
