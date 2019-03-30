@@ -14,7 +14,7 @@ from HL2_params import *
 from library_filter import *
 
 def validate_parameters():
-
+    ''' validate params from params file '''
 	# check that the length of the fastq file lists are all equal (if creating a library)
 	if not (len(R1_FILES) == len(R2_FILES) == len(LIBS)):
         	print(lt+"ERROR: fastq file lists don't match in length")
@@ -27,14 +27,10 @@ def validate_parameters():
 		kmers = kmers_k(sequence, WORDSIZE)
 		seq.append(kmers)
 
-
 def create_paths(run_name):
-
-	# create results directory if it does not exist.
+	## create results directory and results/run_name/ if they don't exist
 	if not os.path.exists("results"):
 		os.makedirs("results")
-
-	# create results/run_name/ directory, if it does not exist
 	if not os.path.exists('results/'+run_name):
 		os.makedirs('results/'+run_name)
 
