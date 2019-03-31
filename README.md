@@ -2,7 +2,7 @@
 This document contains the documentation for the analysis of transposable-element anchored PCR sequencing (tea-seq) data obtained by the method described in the following document:
 * https://docs.google.com/document/d/1z6l_yjRtnGkOStGcOwBBOVk0gpyeZiGODGK2Vp9sF5M/edit?usp=sharing
 
-<center><a href = "https://github.com/jasenjackson/tea-seq/blob/master/Screen%20Shot%202019-03-31%20at%204.12.52%20PM.png?raw=true"><img src = "https://github.com/jasenjackson/tea-seq/blob/master/Screen%20Shot%202019-03-31%20at%204.12.52%20PM.png?raw=true"/></a></center>
+<center><a href = "https://github.com/jasenjackson/tea-seq/"><img src = "https://github.com/jasenjackson/tea-seq/blob/master/Screen%20Shot%202019-03-31%20at%204.12.52%20PM.png?raw=true"/></a></center>
 
 ## Cleaning up the FASTQ libraries
 The first step in the analysis is to process the raw paired-end read FASTQ files for  for each amplicon library. This can be accomplished using the 'library_filter.py' script. This is still a work in progress, but it has multiple steps:
