@@ -60,7 +60,7 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 	library_file = open(file_path, 'r')
 	print("\tTrimming "+library_name+" with provided feature sequences...")
 	trimmed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.fastq"
-	if os.path.exists(trimmed_file_path):break
+	if os.path.exists(trimmed_file_path): return 0
 	else:
 		trimmed_file = open(trimmed_file_path, 'a')
 
@@ -113,25 +113,20 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 		print("\t\t"+ str(count) +" trimmed reads added to " +trimmed_file_path)
 
 def remove_duplicates(library_name, run_name):
-		#open trimmed file & remove duplicates
-		trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
-		trimmed_file = open(trimmed_file_path, 'r')
-		print("\tRemoving dups from "+library_name+".trimmed.fastq...")
-		duplicates_removed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.duplicates_removed.fastq"
-		duplicates_removed = open(duplicates_removed_file_path, 'a')
+	## requires
+	## open trimmed file & remove duplicates
+	trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
+	trimmed_file = open(trimmed_file_path, 'r')
+	print("\tRemoving dups from "+library_name+".trimmed.fastq...")
+	duplicates_removed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.duplicates_removed.fastq"
+	duplicates_removed = open(duplicates_removed_file_path, 'a')
 
-		unique_set = [] #collect unique seqs
-		duplicate_count = 0
-		redundancy_map = dict()
+	## stores non-redundant integrations in nested dictionary
+	nested_dict = lambda: collections.defaultdict(nested_dict)
+	redundancy_map = nested_dict()
 
-		while True:
-			header = trimmed_file.readline()
-			seq = trimmed_file.readline()
-			if not seq: break
-
-			# grab last 20bp
-			new_key = seq[-20:] # make variable
-			new_len = len(seq)
-
-			# if not in redundancy map, add it
-			# else, find longest
+	while True:
+		header = trimmed_file.readline()
+		seq = trimmed_file.readline()
+		if not seq: break
+		#add_to_map(seq, redundancy_map)
