@@ -7,6 +7,8 @@ This script contains functions necessary for filtering TRAPseq (teaseq???) libra
 import glob, os
 import os.path
 import sys
+from io import *
+from redundancy_map import *
 from feature_search import *
 from collections import defaultdict
 
