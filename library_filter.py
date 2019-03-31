@@ -62,7 +62,7 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 	file_path = "results/"+run_name+'/'+library_name+"/out.extendedFrags.fastq"
 	library_file = open(file_path, 'r')
 	print("\tTrimming "+library_name+" with provided feature sequences...")
-	trimmed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.fastq"
+	trimmed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.fasta"
 	if os.path.exists(trimmed_file_path): return 0
 	else:
 		trimmed_file = open(trimmed_file_path, 'a')
