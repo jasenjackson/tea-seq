@@ -118,7 +118,7 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 def remove_duplicates(library_name, run_name, end_size):
 
 	## create redundancy map
-	trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
+	trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fasta"
 	rm = redundancy_map(trimmed_file_path, end_size)
 	'''## input/output function
 	## open trimmed file & remove duplicates

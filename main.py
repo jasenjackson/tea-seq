@@ -35,7 +35,7 @@ def create_library(r1, r2, library_name, run_name):
 
 	#if the library ('results/run_name/library_name') already exists, move to next library.
 	if os.path.exists('results/'+run_name+"/"+library_name):
-		print(library_name + ' already exists... skipping to required step!')
+		print(library_name + ' folder has already been created... skipping to required step!')
 	else:
 		os.makedirs('results/'+run_name+"/"+library_name)
 		print(lt+'Making ' + library_name + '...')
