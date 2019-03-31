@@ -43,7 +43,7 @@ def create_library(r1, r2, library_name, run_name):
 	collate(library_name, run_name)
 	#feature_count(FEATURES, library_name, run_name)
 	feature_trim(FEATURES, library_name, run_name)
-	remove_duplicates(library_name, run_name)
+	remove_duplicates(library_name, run_name, 20)
 
 if __name__ == "__main__":
 

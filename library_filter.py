@@ -113,17 +113,21 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 		print("\t\t"+file_path+" was succesfully trimmed and filtered using: "+ features_used)
 		print("\t\t"+ str(count) +" trimmed reads added to " +trimmed_file_path)
 
-def remove_duplicates(library_name, run_name):
-	## requires
+def remove_duplicates(library_name, run_name, end_size):
+
+	## create redundancy map
+	trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
+	rm = redundancy_map(trimmed_file_path, end_size)
+	'''## input/output function
 	## open trimmed file & remove duplicates
 	trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fastq"
-	trimmed_file = open(trimmed_file_path, 'r')
+
+	#duplicates_removed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.duplicates_removed.fastq"
+	#duplicates_removed = open(duplicates_removed_file_path, 'a')
 	print("\tRemoving dups from "+library_name+".trimmed.fastq...")
-	duplicates_removed_file_path = "results/"+run_name+"/"+library_name+"/"+library_name+".trimmed.duplicates_removed.fastq"
-	duplicates_removed = open(duplicates_removed_file_path, 'a')
 
 	## stores non-redundant integrations in nested dictionary
-	nested_dict = lambda: collections.defaultdict(nested_dict)
+	nested_dict = lambda: defaultdict(nested_dict)
 	redundancy_map = nested_dict()
 
 	while True:
@@ -131,3 +135,4 @@ def remove_duplicates(library_name, run_name):
 		seq = trimmed_file.readline()
 		if not seq: break
 		#add_to_map(seq, redundancy_map)
+	'''
