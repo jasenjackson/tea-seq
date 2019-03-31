@@ -8,6 +8,7 @@ import glob, os
 import os.path
 import sys
 from feature_search import *
+from collections import defaultdict
 
 def merge_reads(r1,  r2, library_name, run_name, bin, data):
 

@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 def add_to_map(seq, map, end_size): #required nested map
 	## if key does not exist, add it
 	new_key = seq[-20:]
