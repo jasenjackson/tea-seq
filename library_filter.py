@@ -14,7 +14,7 @@ def merge_reads(r1,  r2, library_name, run_name, bin, data):
 
 	#If contig has already been merged, skip this step.
 	if os.path.exists('results/'+run_name+"/"+library_name+'/out.extendedFrags.fastq'):
-		print("\t"+library_name+' has already been merged. Skipping to next step!')
+		print("\tReads from "+library_name+' have already been merged. Skipping to next step!')
 
 	#otherwise merge forward and reverse read files for the library
 	else:

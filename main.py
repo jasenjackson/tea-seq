@@ -34,18 +34,16 @@ def create_paths(run_name):
 def create_library(r1, r2, library_name, run_name):
 
 	#if the library ('results/run_name/library_name') already exists, move to next library.
-	if os.path.exists('results/'+run_name+"/"+library_name+"~"):
-		print(library_name + ' already exists... skipping!')
-
-	#Otherwise, make a library folder and fill it up with relevant library files
+	if os.path.exists('results/'+run_name+"/"+library_name):
+		print(library_name + ' already exists... skipping to required step!')
 	else:
 		os.makedirs('results/'+run_name+"/"+library_name)
 		print(lt+'Making ' + library_name + '...')
-		merge_reads(r1, r2, library_name, run_name, BIN_DIR, DATA_DIR)
-		collate(library_name, run_name)
-		#feature_count(FEATURES, library_name, run_name)
-		feature_trim(FEATURES, library_name, run_name)
-		remove_duplicates(library_name, run_name)
+	merge_reads(r1, r2, library_name, run_name, BIN_DIR, DATA_DIR)
+	collate(library_name, run_name)
+	#feature_count(FEATURES, library_name, run_name)
+	feature_trim(FEATURES, library_name, run_name)
+	remove_duplicates(library_name, run_name)
 
 if __name__ == "__main__":
 
