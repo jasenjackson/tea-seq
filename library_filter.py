@@ -96,11 +96,11 @@ def feature_trim(features, library_name, run_name, end_size): #feature count, fi
 
 			# trim and store eligible sequences
 			if ((has_killSequence==False) and (has_adapter==True) and (has_element==True)):
-				count += 1
 				#print(count)
 				adapter_end = adapter_pos+adapter_len
 				trimmed_line = sequenceLine[adapter_end:element_pos] + '\n'
 				if len(trimmed_line) >= end_size:
+					count += 1
 					fasta_header = ">"+header
 					new_entry = fasta_header+trimmed_line
 					trimmed_file.write(new_entry)
@@ -120,7 +120,6 @@ def remove_duplicates(library_name, run_name, end_size):
 	## create redundancy map
 	trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fasta"
 	rm = redundancy_map(trimmed_file_path, end_size)
-	rm.print_map()
 	print("Unique reads: "+str(rm.unique_count))
 	print("Duplicate reads: "+str(rm.duplicate_count))
 	print("Total reads: "+ str(rm.total_count))
