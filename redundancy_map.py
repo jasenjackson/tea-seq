@@ -29,13 +29,13 @@ class redundancy_map():
         if not isinstance(end_size, int): print(err+"invalid end_size type")
         elif not end_size > 0: print(err+"end_size must be greater than 0")
         elif fasta_check(fasta_path):
-            print("Creating redundancy map from "+self.fasta)
+            print("\tCreating redundancy map from "+self.fasta)
             self.rm = self.rm_make(fasta_path, end_size)
 
         self.unique_count = len(self.rm)
         self.duplicate_count = self.total_count - self.unique_count
         ## convert redundancy map to fasta file
-        print("Saving redundancy map to "+self.out)
+        print("\t\tSaving redundancy map to "+self.out)
         if self.rm is not None:
             outfile = open(self.out, 'w')
             features = self.get_features(self.rm, 'header', 'sequence')
