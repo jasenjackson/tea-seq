@@ -56,7 +56,7 @@ def collate(library_name, run_name):
 			unassembled_file.close()
 		print("\t\t"+unassembled_file_path+" was succesfully added to "+combined_file_path)
 
-def feature_trim(features, library_name, run_name): #feature count, filture, trim
+def feature_trim(features, library_name, run_name, end_size): #feature count, filture, trim
 
 	#open library FASTQ file & create trimmed file
 	file_path = "results/"+run_name+'/'+library_name+"/out.extendedFrags.fastq"
@@ -100,7 +100,7 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 				#print(count)
 				adapter_end = adapter_pos+adapter_len
 				trimmed_line = sequenceLine[adapter_end:element_pos] + '\n'
-				if len(trimmed_line) > 1:
+				if len(trimmed_line) >= end_size:
 					fasta_header = ">"+header
 					new_entry = fasta_header+trimmed_line
 					trimmed_file.write(new_entry)

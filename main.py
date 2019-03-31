@@ -42,7 +42,7 @@ def create_library(r1, r2, library_name, run_name):
 	merge_reads(r1, r2, library_name, run_name, BIN_DIR, DATA_DIR)
 	collate(library_name, run_name)
 	#feature_count(FEATURES, library_name, run_name)
-	feature_trim(FEATURES, library_name, run_name)
+	feature_trim(FEATURES, library_name, run_name, 20)
 	remove_duplicates(library_name, run_name, 20)
 
 if __name__ == "__main__":
