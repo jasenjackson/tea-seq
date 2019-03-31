@@ -100,7 +100,7 @@ def feature_trim(features, library_name, run_name): #feature count, filture, tri
 				#print(count)
 				adapter_end = adapter_pos+adapter_len
 				trimmed_line = sequenceLine[adapter_end:element_pos] + '\n'
-				if len(trimmed_line) > 0:
+				if len(trimmed_line) > 1:
 					fasta_header = ">"+header
 					new_entry = fasta_header+trimmed_line
 					trimmed_file.write(new_entry)
