@@ -5,25 +5,14 @@ This document contains the documentation for the analysis of transposable-elemen
 Repetitive elements predominate the landscape of virtually all plant & animal genomes. Retrotransposons are especially ubiquitous because of their ability to rapidly amplify their copy-number in eukaryotic genomes via reverse-transcription of their RNA intermediate. Because of their relative abundance and ability to regulate the expression of nearby genes, it has been proposed that some of these elements have been co-opted into mutualistic relationships by their hosts, whereby, under immense selective pressure, transcriptionally-silenced retroelements are unleashed into coding regions, resulting in a rapid diversification of the host’s genome. Genome-wide analysis of retrotransposon insertional polymorphisms between wild and cultivated soybean may reveal novel retroelement insertions in the regulatory regions of domestication-related traits. As such, we have developed a transposon-anchored PCR protocol which amplifies genomic regions flanking target retrotransposon families and subjects their amplicon libraries to Illumina sequencing. 
 
 ## Overview
-Our computational strategy depends on cleaning and annotating paire
+Our per-library computational mapping strategy can be summarized in 5 main steps. 
 
-0. modify rm_feats to return list of features [done]
-1. Convert rm into class [done]
-2. Count duplicates & uniques, store as rm attribute [done]
-3. Use dups on trimmed_file [done]
-4. Align trimmed_dups_removed file to reference without LTR added [in progress]
-5. Fix quality/adapter trimming [in progress]
-    a. quality TRIM paired-end reads (Trimmomatic), assess quality graphs before & after (FASTQC)
-    b. merge reads before and after quality trimming, assess quality (FASTQC)
-    c. trim adapter from 5'/3' end (Trimmomatic)
-6. Clean up genome-junction regions w/ redundancy map [in progress]
-    d. locate LTR edge using KMER search. Create duplicate file with LTRs removed.
-    e. create redundancy map from trimmed file (extend to paired-end read), remove polypurine tract sequences
-6. Align *with* LTR added, allow for no more than <3> multi-hits. Remove solid hits.
-7. Align *w/o* LTR, allow for no more than <10> hits. Remove repeats. Characterize
-8. Characterize locations by reading BAM file. (look in GENEIOUS, use pysam to fetch regions)
-9. Compare to known locations.
-10. Repeat for all chromosomes & high quality 
+0. Clean up FASTQ amplicon libraries (quality trim & remove splinkerette adapters).
+1. Convert FASTQ libraries into 'library' instance (identify genome-LTR junctions & create redundancy map)
+2. Align non-redundant genome-LTR junctions to target reference. 
+3. Re-align unsuccessful hits with LTR removed, and allow for multi-mapping.
+4. Identify genomic context & possible function for hits in non-repetitive regions. 
+5. Identify genomic context for hits in repetitive regions. 
 
 ## Cleaning up the FASTQ libraries
 The first step in the analysis is to process the raw paired-end read FASTQ files for  for each amplicon library. This can be accomplished using the 'library_filter.py' script. This is still a work in progress, but it has multiple steps:
