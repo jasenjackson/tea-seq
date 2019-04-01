@@ -8,7 +8,7 @@ We have developed computational strategies to study the data produced by this pr
 
 Our per-library computational mapping strategy can be summarized in 5 main steps. 
 1. Clean up reads and trim adapters.
-2. Identify genome-LTR junctions, remove sequences representing internal regions and create redundancy map.
+2. Identify genome-LTR junctions and filter reads (redundancy map). 
 3. Align filtered, non-redundant reads to reference.
 4. Re-align unsuccessful hits with LTR removed, and allow for multi-mapping.
 5. Identify genomic context & possible function for all successful hits.
