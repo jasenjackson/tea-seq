@@ -2,7 +2,7 @@
 <center><a href = "https://github.com/jasenjackson/tea-seq/"><img src = "https://github.com/jasenjackson/tea-seq/blob/master/Screen%20Shot%202019-03-31%20at%204.18.19%20PM.png?raw=true"/></a></center>
 
 ## Protocol overview
-As such we have developed a transposon-anchored PCR protocol which amplifies genomic regions flanking target retrotransposon families and subjects their amplicon libraries to Illumina sequencing. We have applied this protocol to create amplicon libraries representing GMR30 flanking regions in a variety of different Glycine max and Glycine soja cultivars.  (<a href="https://bit.ly/2WzWjmg">more info</a>).
+We have developed a transposon-anchored PCR protocol which amplifies genomic regions flanking target retrotransposon families and subjects their amplicon libraries to Illumina sequencing. We have applied this protocol to create amplicon libraries representing GMR30 flanking regions in a variety of different Glycine max and Glycine soja cultivars.  (<a href="https://bit.ly/2WzWjmg">more info</a>).
 
 ## Computational overview
 We have developed computational techniques/scripts to study the data produced by this protocol. Briefly: For each library, our reads are processed and strategically aligned to a target reference genome. The genomic context of each alignment is then assessed. Finaly, these alignments are compared across sets of libraries.
