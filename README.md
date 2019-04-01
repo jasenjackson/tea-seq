@@ -1,11 +1,10 @@
 # Targeted Sequencing of Retrotransposon Integrations in Soybean populations  [work in progress]
 <center><a href = "https://github.com/jasenjackson/tea-seq/"><img src = "https://github.com/jasenjackson/tea-seq/blob/master/Screen%20Shot%202019-03-31%20at%204.18.19%20PM.png?raw=true"/></a></center>
 
-## Protocol overview
 We have developed a transposon-anchored PCR protocol which amplifies genomic regions flanking target retrotransposon families and subjects their amplicon libraries to Illumina sequencing. We have applied this protocol to create amplicon libraries representing GMR30 flanking regions in a variety of different Glycine max and Glycine soja cultivars.  (<a href="https://bit.ly/2WzWjmg">more info</a>).
 
-## Computational overview
-We have developed computational techniques/scripts to study the data produced by this protocol. Briefly: For each library, our reads are processed and strategically aligned to a target reference genome. The genomic context of each alignment is then assessed. Finaly, these alignments are compared across sets of libraries.
+## Overview
+We have developed computational strategies to study the data produced by this protocol. First, sequencing reads are processed and strategically aligned to a target reference genome for each amplicon library. The genomic context of each alignment is then assessed. Finally, these alignments are compared across sets of libraries.
 
 Our per-library computational mapping strategy can be summarized in 5 main steps. 
 1. Clean up FASTQ amplicon libraries (quality trim & remove splinkerette adapters).
