@@ -7,12 +7,16 @@ Repetitive elements predominate the landscape of virtually all plant & animal ge
 ## Overview
 Our per-library computational mapping strategy can be summarized in 5 main steps. 
 
-0. Clean up FASTQ amplicon libraries (quality trim & remove splinkerette adapters).
-1. Convert FASTQ libraries into 'library' instance (identify genome-LTR junctions & create redundancy map)
-2. Align non-redundant genome-LTR junctions to target reference. 
-3. Re-align unsuccessful hits with LTR removed, and allow for multi-mapping.
-4. Identify genomic context & possible function for hits in non-repetitive regions. 
-5. Identify genomic context for hits in repetitive regions. 
+1. Clean up FASTQ amplicon libraries (quality trim & remove splinkerette adapters).
+2. Convert FASTQ libraries into 'library' instance (identify genome-LTR junctions & create redundancy map)
+3. Align non-redundant genome-LTR junctions to target reference. 
+4. Re-align unsuccessful hits with LTR removed, and allow for multi-mapping.
+5. Identify genomic context & possible function for all successful hits. 
+
+Our computational strategy for library comparisons can be summarized in 3 main steps. 
+1. Perform pair-wise comparison of non-repetitive hits for each pair of libraries. 
+2. Use hierarchical clustering to observe population structure. 
+3. Identify novel integrations that are over-represented in a cluster. 
 
 ## Cleaning up the FASTQ libraries
 The first step in the analysis is to process the raw paired-end read FASTQ files for  for each amplicon library. This can be accomplished using the 'library_filter.py' script. This is still a work in progress, but it has multiple steps:
