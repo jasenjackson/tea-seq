@@ -162,23 +162,17 @@ def main():
     print("Duplicates: "+ str(lib.duplicate_count))
     print("Total reads: "+str(lib.total_count))
 
-    ## TODO remove internal sequences
-    #lib.remove_junction("Polypurine-Tract")
+    ## TODO remove internal sequences (error sensitive)
+    lib.remove_junction("Polypurine-Tract")
 
     ## TODO remove adapters
-    #lib.remove_adapter("Adapter")
-
-    ## TODO quality trim
-    #lib.qual_trim()
+    lib.remove_adapter("Adapter")
 
     ## save map as FASTQ w/ LTR
-    #lib.save_junction("HL2.GMR30.junctions.r1.FASTQ", "HL2.GMR30.junctions.r2.FASTQ")
+    lib.save(mode="junction","HL2.GMR30.junctions.r1.FASTQ", "HL2.GMR30.junctions.r2.FASTQ")
 
     ## save map as FASTQ w/o LTR
-    #lib.save_flanking("HL2.GMR30.flanking.FASTQ")
-
-    ## align to reference genome
-    #lib.align("soybean index")
+    lib.save(mode="flanking","HL2.GMR30.flanking.r1.FASTQ","HL2.GMR30.flanking.r2.FASTQ")
 
 if __name__ == "__main__":
     main()
