@@ -14,15 +14,15 @@ class junction_map():
        reads that the flanking site is on the 3' end of the read,
        and the repetitive element has already been trimmed away."""
 
-    def __init__(self, r1_path, r2_path, ltr, end_size):
+    def __init__(self, r1_path, r2_path, ltr, end_size, verbose):
         self.fastq_r1 = r1_path
         self.fastq_r2 = r2_path
+        self.ltr = ltr
         self.end_size = end_size
+        self.verbose = verbose
         self.unique_count = int()
         self.duplicate_count = int()
         self.total_count = int()
-        self.out = ""
-        self.ltr = ltr
         self.out1 = self.fastq_r1[:-6] + ".junctions.FASTQ"
         self.out2 = self.fastq_r2[:-6] + ".junctions.FASTQ"
         if not self.end_size > 0:
@@ -36,6 +36,7 @@ class junction_map():
 
 
     def build_from_merged(self, file):
+        if self.verbose == True: print("Building genome junction map from reads")
         nested_dict = lambda: defaultdict(nested_dict)
         self.map = nested_dict()
         reads = open(file, 'r')
@@ -46,15 +47,24 @@ class junction_map():
             self.total_count += 1
 
             ## locate genome-LTR junction & add to map
+            if (self.verbose == True):
+                print("Identified "+ str(self.total_count) + " junctions")
             ltr_pos, ltr_dist = kmer_search(seq, self.ltr, 1, 0)
             self.add_junction(seq,header,ltr_pos)
 
     def build_from_paired(self):
+        if self.verbose == True: print("Building genome junction map from reads")
         nested_dict = lambda: defaultdict(nested_dict)
         self.map = nested_dict()
         r1, r2 = open(self.fastq_r1, 'r'), open(self.fastq_r2, 'r')
         while True:
             junction = {}; self.total_count += 1
+
+            ## update user
+            if (self.verbose == True and self.total_count % 1000 == 0):
+                print("Identified "+ str(self.total_count) + " junctions. ")
+
+            ## grab read data
             junction["r1_header"] = r1.readline()[:-1]
             junction["r2_header"] = r2.readline()[:-1]
             junction["r1_sequence"] = r1.readline()[:-1]
@@ -64,6 +74,7 @@ class junction_map():
             junction["r2_quality"] = r2.readline()[:-1]
             if not comment: break
 
+            ## identify genome-LTR junction and add to junction map
             r1_pos, r1_dist = kmer_search(junction['r1_sequence'], self.ltr, 1, 0)
             r2_pos, r2_dist = kmer_search(junction['r2_sequence'], self.ltr, 1, 0)
             if r1_dist <= r2_dist:
@@ -142,8 +153,10 @@ class junction_map():
 
 def main():
 
-    ## build hash map of genome junctions
-    lib = junction_map("r1.fastq","r2.fastq","GMR30",20)
+    ## build hash map of genome junctions (takes a while)
+    lib = junction_map("r1.fastq","r2.fastq","GMR30",20, True)
+    #lib = junction_map("data/Glycine_GMR30/HL-2_S2_L001_R1_001.fastq","data/Glycine_GMR30/HL-2_S2_L001_R2_001.fastq","TGTTAGCCCATA",20)
+
     lib.print_map()
     print("Uniques: "+ str(lib.unique_count))
     print("Duplicates: "+ str(lib.duplicate_count))
@@ -158,8 +171,11 @@ def main():
     ## TODO quality trim
     #lib.qual_trim()
 
-    ## save map
-    #lib.save("HL2.junctions.FASTQ")
+    ## save map as FASTQ w/ LTR
+    #lib.save_junction("HL2.GMR30.junctions.r1.FASTQ", "HL2.GMR30.junctions.r2.FASTQ")
+
+    ## save map as FASTQ w/o LTR
+    #lib.save_flanking("HL2.GMR30.flanking.FASTQ")
 
     ## align to reference genome
     #lib.align("soybean index")
