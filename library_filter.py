@@ -120,9 +120,9 @@ def remove_duplicates(library_name, run_name, end_size):
 	## create redundancy map
 	trimmed_file_path = "results/"+run_name+'/'+library_name+"/"+library_name+".trimmed.fasta"
 	rm = redundancy_map(trimmed_file_path, end_size)
-	print("Unique reads: "+str(rm.unique_count))
-	print("Duplicate reads: "+str(rm.duplicate_count))
-	print("Total reads: "+ str(rm.total_count))
+	print("\t\tUnique reads: "+str(rm.unique_count))
+	print("\t\tDuplicate reads: "+str(rm.duplicate_count))
+	print("\t\tTotal reads: "+ str(rm.total_count))
 	rm.print_map_head(10)
 	'''## input/output function
 	## open trimmed file & remove duplicates
