@@ -17,6 +17,10 @@ def type_fasta(path):
         return True
     else: return False
 
+def type_fastq(path):
+    if path[-6:].lower() == '.fastq':
+        return True
+    else: return False
 def fasta_check(path):
     ## check file for .fasta/.fa ending, get name of genome
     fasta_check = type_fasta(path)

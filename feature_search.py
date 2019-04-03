@@ -30,7 +30,7 @@ def hamming(s1, s2):
     assert len(s1) == len(s2)
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
 
-def kmerSearch(query, kmers, subject, threshold, direction):
+def kmer_search_depr(query, kmers, subject, threshold, direction):
 	min_length = threshold*len(query)
 	pos, offset, dist = 0, 0, 0
 	match, subQuery = "", ""
@@ -59,19 +59,15 @@ def kmerSearch(query, kmers, subject, threshold, direction):
 
 
 #Returns starting position of best subject-query alignment.
-def slidingSearch(subject, query, maxdist, breakdist):
+def kmer_search(subject, query, maxdist, breakdist):
     k = len(query) # kmers should be query length
     curr_dist, match_start, lowest_obs_dist = 0, 0, k
-    #iterate through subject with sliding window of size k=len(query)
     for i in range(0, len(subject)-k):
-        curr_dist = hamming(subject[i:i+k], query) #align subject & query
-        #print(subject[i:i+k]+" "+str(curr_dist))
+        curr_dist = hamming(subject[i:i+k], query)
         if curr_dist < lowest_obs_dist: # update best match
             lowest_obs_dist = curr_dist
             match_start = i
-            if curr_dist <= breakdist: # Heuristic: if the match is "exceptional"
+            if curr_dist <= breakdist: # Heuristic: kill for exact match
                 break
-    if lowest_obs_dist <= maxdist: # if the best match meets threshold requirements
-        return(match_start, lowest_obs_dist)
-    else:
-        return(-1, -1)
+    if lowest_obs_dist <= maxdist: return(match_start, lowest_obs_dist)
+    else: return(k, k)
