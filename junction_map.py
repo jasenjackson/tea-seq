@@ -14,7 +14,7 @@ class junction_map():
        reads that the flanking site is on the 3' end of the read,
        and the repetitive element has already been trimmed away."""
 
-    def __init__(self, r1_path, r2_path, ltr, end_size, verbose):
+    def __init__(self, r1_path, r2_path, ltr, end_size, verbose=True):
         self.fastq_r1 = r1_path
         self.fastq_r2 = r2_path
         self.ltr = ltr
@@ -62,7 +62,7 @@ class junction_map():
 
             ## update user
             if (self.verbose == True and self.total_count % 1000 == 0):
-                print("Identified "+ str(self.total_count) + " junctions. ")
+                print("Processed " + str(self.total_count) + " reads. " + str(len(self.map)) + " junctions identified. ")
 
             ## grab read data
             junction["r1_header"] = r1.readline()[:-1]
@@ -154,25 +154,25 @@ class junction_map():
 def main():
 
     ## build hash map of genome junctions (takes a while)
-    lib = junction_map("r1.fastq","r2.fastq","GMR30",20, True)
-    #lib = junction_map("data/Glycine_GMR30/HL-2_S2_L001_R1_001.fastq","data/Glycine_GMR30/HL-2_S2_L001_R2_001.fastq","TGTTAGCCCATA",20)
+    #lib = junction_map("r1.fastq","r2.fastq","GMR30",20, True)
+    lib = junction_map("data/Glycine_GMR30/HL-2_S2_L001_R1_001.fastq","data/Glycine_GMR30/HL-2_S2_L001_R2_001.fastq","TGTTAGCCCATA",30,verbose=True)
 
-    lib.print_map()
+    lib.print_map_head(30)
     print("Uniques: "+ str(lib.unique_count))
     print("Duplicates: "+ str(lib.duplicate_count))
     print("Total reads: "+str(lib.total_count))
 
     ## TODO remove internal sequences (error sensitive)
-    lib.remove_junction("Polypurine-Tract")
+    #lib.remove_junction("Polypurine-Tract")
 
     ## TODO remove adapters
-    lib.remove_adapter("Adapter")
+    #lib.remove_adapter("Adapter")
 
     ## save map as FASTQ w/ LTR
-    lib.save(mode="junction","HL2.GMR30.junctions.r1.FASTQ", "HL2.GMR30.junctions.r2.FASTQ")
+    #lib.save(mode="junction","HL2.GMR30.junctions.r1.FASTQ", "HL2.GMR30.junctions.r2.FASTQ")
 
     ## save map as FASTQ w/o LTR
-    lib.save(mode="flanking","HL2.GMR30.flanking.r1.FASTQ","HL2.GMR30.flanking.r2.FASTQ")
+    #lib.save(mode="flanking","HL2.GMR30.flanking.r1.FASTQ","HL2.GMR30.flanking.r2.FASTQ")
 
 if __name__ == "__main__":
     main()
