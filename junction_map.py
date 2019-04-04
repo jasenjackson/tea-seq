@@ -202,17 +202,42 @@ def main():
     print("Duplicates: "+ str(lib.duplicate_count))
     print("Total reads: "+str(lib.total_count))
 
-    ## TODO remove internal sequences (error sensitive)
+    ###### PROGRESS ######
+    ### *** = DO BEFORE NEXT MONDAY FOR PRESENTATION
+    ## TODO remove internal sequences (error sensitive) ***
     #lib.remove_junction("Polypurine-Tract")
 
-    ## TODO remove adapters
+    ## TODO remove adapters ***
     #lib.remove_adapter("Adapter")
 
-    ## save map as FASTQ w/ LTR
-    #lib.save(mode="junction","HL2.GMR30.junctions.r1.FASTQ", "HL2.GMR30.junctions.r2.FASTQ")
+    ## TODO quality trim (skip for now)
+    #lib.quality_trim()
 
-    ## save map as FASTQ w/o LTR
+    ## TODO save features from junction map (skip for now)
+    #lib.save(mode="feature","depth","HL2.GMR30.junctions.depth.txt")
+    #lib.save(mode="feature","depth","HL2.GMR30.junctions.depth.ppt_removed.txt")
+    #lib.save(mode="feature","depth","HL2.GMR30.junctions.depth.ppt_removed.adapters_removed.txt")
+    #lib.save(mode="feature","flank_length","HL2.GMR30.junctions.flank_length.txt")
+    #lib.save(mode="feature","flank_length","HL2.GMR30.junctions.flank_length.ppt_removed.txt")
+    #lib.save(mode="feature","flank_length","HL2.GMR30.junctions.flank_length.ppt_removed.txt")
+
+    ## save map as FASTQ with & without LTR ***
+    #lib.save(mode="junction","HL2.GMR30.junctions.r1.FASTQ", "HL2.GMR30.junctions.r2.FASTQ")
     #lib.save(mode="flanking","HL2.GMR30.flanking.r1.FASTQ","HL2.GMR30.flanking.r2.FASTQ")
+
+    ## align junctions with bowtie ***
+    ## add nearby genes with gtf file
+    ## compare to known integrations
+    ## export results & feed into Rplot ***
+
+    ## align flanks with bowtie
+    ## classify each junction as 'composite','unknown_repeat'or'non-repetitive'
+    ## export results & feed into rplot
+    ## add nearby genes with gtf file
+    ## compare to known integrations
+
+    ## build functions to study each gene type / repeat type
+    ## build functions to compare junction maps
 
 if __name__ == "__main__":
     main()
