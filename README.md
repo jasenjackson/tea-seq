@@ -4,14 +4,14 @@ We have developed a transposon-anchored PCR protocol which amplifies genomic reg
 <center><a href = "https://github.com/jasenjackson/tea-seq/"><img src = "https://github.com/jasenjackson/tea-seq/blob/master/Screen%20Shot%202019-03-31%20at%204.18.19%20PM.png?raw=true"/></a></center>
 
 ## Overview
-We have developed computational strategies to study the data produced by this protocol. First, sequencing reads are processed and strategically aligned to a target reference genome for each amplicon library. The genomic context of each alignment is then assessed. Finally, these alignments are compared across sets of libraries.
+We have developed computational strategies to study the data produced by this protocol. First, sequencing reads are filtered, trimmed and aligned to a target reference genome for each amplicon library. The genomic context of each alignment is then assessed. Finally, these alignments are compared across sets of libraries.
 
 Our per-library computational mapping strategy can be summarized in 6 main steps. 
 1. Identify genome-LTR junctions from reads. 
-2. Remove junctions with sequence from internal regions.
+2. Remove internal regions junctions.
 3. Trim splinkerette adapter from remaining sequences.
-4. Align junctions to reference, and remove hits from junction map. 
-5. Re-align unsuccessful hits with the LTR removed.
+4. Align junctions to reference genome using Bowtie2. 
+5. Re-align unsuccessful hits with LTR removed & identify non-repetitive alignments. 
 6. Identify genomic context & possible function for all successful hits.
 
 Our computational strategy for library comparisons can be summarized in 3 main steps. 
