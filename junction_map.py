@@ -23,6 +23,7 @@ class junction_map():
         self.unique_count = int()
         self.duplicate_count = int()
         self.total_count = int()
+        self.sorted_keys = defaultdict(list)# key = feature, value = list
         self.out1 = self.fastq_r1[:-6] + ".junctions.FASTQ"
         self.out2 = self.fastq_r2[:-6] + ".junctions.FASTQ"
         if not self.end_size > 0:
@@ -109,6 +110,17 @@ class junction_map():
         for key in self.map:
             if (key == kill_sequence): print(key)
 
+    def get_sorted_keys(self, feature):
+        if self.sorted_keys[feature]: return self.sorted_keys[feature]
+        key_list, feat_list = list(), list()
+        for key in self.map:
+            key_list.append(key)
+            feat_list.append(self.map[key][feature])
+        key_list = [x for _,x in sorted(zip(feat_list,key_list))]
+        key_list.reverse()
+        self.sorted_keys[feature] = key_list
+        return self.sorted_keys[feature]
+
     def save(self,*out):
         if out: out_path = out[0]
         else: out_path = self.out
@@ -121,26 +133,52 @@ class junction_map():
                 outfile.write(features[1][i]+'\n')
         else: print(err+"could not save redundancy map")
 
-    def print_map(self):
-        print("\nRedundancy map ("+str(self.unique_count)+" of "+str(self.unique_count)+" shown) \n")
-        print_count = int()
-        for p_key, p_feats in self.map.items():
-            print(p_key+" * "+self.map[p_key]['ltr'])
-            for feat in p_feats: print("\t"+feat+':'+str(p_feats[feat]))
-            print(""); print_count += 1
 
-    def print_map_head(self, n):
-        n_shown = int()
-        if n > self.unique_count: n_shown = self.unique_count # can't show more junctions than we have
-        else: n_shown = n
-        print("\nRedundancy map ("+str(n_shown)+" of "+str(self.unique_count)+" shown) \n")
+    def map_all(self, feature='depth', max_char=100):
+        ## print all junctions ranked in descending order by feature (Default: depth)
+        print("\n~~~ map_all ~~~")
+        print("Junction map ("+str(len(self.map))+" of "+str(self.unique_count)+" shown)")
+        print("Sorted by "+feature+" in descending order.")
         print_count = int()
-        for p_key, p_feats in self.map.items():
-            if print_count < n:
-                print(p_key)
-                for feat in p_feats: print("\t"+feat+': '+str(p_feats[feat]))
-                print(""); print_count += 1
-            else: break
+        keys_list = self.get_sorted_keys('depth')
+        for key in keys_list:
+            print("\n"+key)
+            for feat in self.map[key]:
+                if isinstance(self.map[key][feat], basestring):
+                    p_feat = self.map[key][feat][:max_char]
+                print("\t"+feat+": "+str(p_feat))
+        print("~~~~~~~~~~~~")
+
+    def map_view(self, max_lines=20, feature='depth', view="head", max_char=100):
+        '''print (top/bottom) junctions ranked by feature'''
+
+        ## personalize print settings based on parameters
+        lines_displayed = int()
+        if max_lines > self.unique_count: lines_displayed = self.unique_count
+        else: lines_displayed = max_lines
+        keys_list = self.get_sorted_keys(feature)
+        if view=="head":
+            display = "top"
+            keys_list = keys_list[:max_lines]
+        if view=="tail":
+            display = "bottom"
+            keys_list = keys_list[-1*max_lines:]
+
+        ## display print parameters
+        print("~~~ map "+view+" ~~~\n"+
+              "Junction map ("+ display+" "+str(lines_displayed)+" of "+
+              str(self.unique_count)+" shown)\n"+
+              "Sorted by "+feature+" in descending order.")
+
+        ## print junction map
+        for key in keys_list:
+            print("\n"+key)
+            for feat in self.map[key]:
+                if isinstance(self.map[key][feat],basestring):
+                    feat_value=self.map[key][feat][:max_char]
+                else: feat_value=self.map[key][feat]
+                print("\t"+feat+": "+str(feat_value))
+        print("~~~~~~~~~~~~")
 
     def get_features(self, map, *features):
         ## return list of features lists // TODO: error handling
@@ -154,10 +192,12 @@ class junction_map():
 def main():
 
     ## build hash map of genome junctions (takes a while)
-    #lib = junction_map("r1.fastq","r2.fastq","GMR30",20, True)
+    #lib = junction_map("r1.fastq","r2.fastq","GMR30",20, True); print("")
     lib = junction_map("data/Glycine_GMR30/HL-2_S2_L001_R1_001.fastq","data/Glycine_GMR30/HL-2_S2_L001_R2_001.fastq","TGTTAGCCCATA",30,verbose=True)
 
-    lib.print_map_head(30)
+    ## test functions
+    lib.map_view(max_lines=20,feature='depth',view="head",max_char=100); print("")
+    lib.map_view(max_lines=20,feature='depth', view="tail",max_char=100); print("")
     print("Uniques: "+ str(lib.unique_count))
     print("Duplicates: "+ str(lib.duplicate_count))
     print("Total reads: "+str(lib.total_count))
