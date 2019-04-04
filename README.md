@@ -8,7 +8,7 @@ We have developed computational strategies to study the data produced by this pr
 
 Our per-library computational mapping strategy can be summarized in 6 main steps. 
 1. Identify genome-LTR junctions from reads. 
-2. Remove internal regions junctions.
+2. Remove junctions from internal regions.
 3. Trim splinkerette adapter from remaining sequences.
 4. Align junctions to reference genome using Bowtie2. 
 5. Re-align unsuccessful hits with LTR removed & identify non-repetitive alignments. 
