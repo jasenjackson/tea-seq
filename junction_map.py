@@ -144,7 +144,7 @@ class junction_map():
         for key in keys_list:
             print("\n"+key)
             for feat in self.map[key]:
-                if isinstance(self.map[key][feat], basestring):
+                if isinstance(self.map[key][feat], str):
                     p_feat = self.map[key][feat][:max_char]
                 print("\t"+feat+": "+str(p_feat))
         print("~~~~~~~~~~~~")
@@ -174,7 +174,7 @@ class junction_map():
         for key in keys_list:
             print("\n"+key)
             for feat in self.map[key]:
-                if isinstance(self.map[key][feat],basestring):
+                if isinstance(self.map[key][feat],str):
                     feat_value=self.map[key][feat][:max_char]
                 else: feat_value=self.map[key][feat]
                 print("\t"+feat+": "+str(feat_value))
@@ -192,7 +192,8 @@ class junction_map():
 def main():
 
     ## build hash map of genome junctions (takes a while)
-    #lib = junction_map("r1.fastq","r2.fastq","GMR30",20, True); print("")
+    #lib = junction_map("r1.fastq","r2.fastq","GMR30",20, True); print
+    # from junction_map import junction_maplib
     lib = junction_map("data/Glycine_GMR30/HL-2_S2_L001_R1_001.fastq","data/Glycine_GMR30/HL-2_S2_L001_R2_001.fastq","TGTTAGCCCATA",30,verbose=True)
 
     ## test functions
