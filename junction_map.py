@@ -20,8 +20,6 @@ class junction_map():
         self.ltr = ltr
         self.end_size = end_size
         self.verbose = verbose
-        self.unique_count = int()
-        self.duplicate_count = int()
         self.total_count = int()
         self.sorted_keys = defaultdict(list)# key = feature, value = list
         self.out1 = self.fastq_r1[:-6] + ".junctions.FASTQ"
@@ -30,11 +28,6 @@ class junction_map():
             print(err+"end_size must be greater than 0")
             return
         else: self.build_from_paired()
-
-        ## compute counts
-        self.unique_count = len(self.map)
-        self.duplicate_count = self.total_count - self.unique_count
-
 
     def build_from_merged(self, file):
         if self.verbose == True: print("Building genome junction map from reads")
@@ -107,11 +100,20 @@ class junction_map():
         else: self.map[key]['depth'] += 1
 
     def remove_junction(self, kill_sequence):
-        for key in self.map:
-            if (key == kill_sequence): print(key)
+        libmap_copy = {}
+        for junction in self.map:
+            if self.map[junction]['ltr_read'] == 'r1':
+                if (kill_sequence not in self.map[junction]['r1_sequence']):
+                    libmap_copy[junction] = self.map[junction]
+                else: pass
+            if self.map[junction]['ltr_read'] == 'r2':
+                if (kill_sequence not in self.map[junction]['r2_sequence']):
+                    libmap_copy[junction] = self.map[junction]
+                else: pass
+        self.map = libmap_copy
 
     def get_sorted_keys(self, feature):
-        if self.sorted_keys[feature]: return self.sorted_keys[feature]
+        #if self.sorted_keys[feature]: return self.sorted_keys[feature]
         key_list, feat_list = list(), list()
         for key in self.map:
             key_list.append(key)
@@ -121,7 +123,7 @@ class junction_map():
         self.sorted_keys[feature] = key_list
         return self.sorted_keys[feature]
 
-    def save(self,*out):
+    def saveMap(self,*out):
         if out: out_path = out[0]
         else: out_path = self.out
         print("\tSaving to "+out_path)
@@ -133,28 +135,48 @@ class junction_map():
                 outfile.write(features[1][i]+'\n')
         else: print(err+"could not save redundancy map")
 
+    def writeFASTQ(self):
 
-    def map_all(self, feature='depth', max_char=100):
-        ## print all junctions ranked in descending order by feature (Default: depth)
-        print("\n~~~ map_all ~~~")
-        print("Junction map ("+str(len(self.map))+" of "+str(self.unique_count)+" shown)")
-        print("Sorted by "+feature+" in descending order.")
-        print_count = int()
-        keys_list = self.get_sorted_keys('depth')
-        for key in keys_list:
-            print("\n"+key)
-            for feat in self.map[key]:
-                if isinstance(self.map[key][feat], str):
-                    p_feat = self.map[key][feat][:max_char]
-                print("\t"+feat+": "+str(p_feat))
-        print("~~~~~~~~~~~~")
+        fastq_output1 = "" # output for R1 file
+        fastq_output2 = "" # output for R2 file
+        for junction in self.map:
+            # generate output for R1
+            fastq_output1 = fastq_output1 + self.map[junction]['r1_header'] + "\n"
+            fastq_output1 = fastq_output1 + self.map[junction]['r1_sequence'] + "\n"
+            fastq_output1 = fastq_output1 + "+" + "\n"
+            fastq_output1 = fastq_output1 + self.map[junction]['r1_quality'] + "\n"
+            # generate output for R2
+            fastq_output2 = fastq_output2 + self.map[junction]['r2_header'] + "\n"
+            fastq_output2 = fastq_output2 + self.map[junction]['r2_sequence'] + "\n"
+            fastq_output2 = fastq_output2 + "+" + "\n"
+            fastq_output2 = fastq_output2 + self.map[junction]['r2_quality'] + "\n"
+
+        # write to outfile1
+        outfile1 = open(self.out1, 'w')
+        outfile1.write(fastq_output1)
+        outfile1.close()
+
+        # write to outfile2
+        outfile2 = open(self.out2, 'w')
+        outfile2.write(fastq_output2)
+        outfile2.close()
+
+    def writeFlanks(self): # not tested yet
+        fasta_output = "" # output for R1 file
+        for junction in self.map:
+            fasta_output = fasta_output + ">" + self.map[junction]['r1_header'] + "\n"
+            fasta_output = fasta_output + self.map[junction]['r1_s'] + "\n"
+        out_path = self.out1[:-6] + ".fasta"
+        outfile = open(out_path, 'w')
+        outfile.write(fasta_output)
+        outfile1.close()
 
     def map_view(self, max_lines=20, feature='depth', view="head", max_char=100):
         '''print (top/bottom) junctions ranked by feature'''
 
         ## personalize print settings based on parameters
         lines_displayed = int()
-        if max_lines > self.unique_count: lines_displayed = self.unique_count
+        if max_lines > len(self.map): lines_displayed = len(self.map)
         else: lines_displayed = max_lines
         keys_list = self.get_sorted_keys(feature)
         if view=="head":
@@ -167,7 +189,7 @@ class junction_map():
         ## display print parameters
         print("~~~ map "+view+" ~~~\n"+
               "Junction map ("+ display+" "+str(lines_displayed)+" of "+
-              str(self.unique_count)+" shown)\n"+
+              str(len(self.map))+" shown)\n"+
               "Sorted by "+feature+" in descending order.")
 
         ## print junction map
@@ -188,43 +210,30 @@ class junction_map():
             feat_lists.append(feat_list)
         return feat_lists
 
-
 def main():
 
-    ## build hash map of genome junctions (takes a while)
-    #lib = junction_map("r1.fastq","r2.fastq","GMR30",20, True); print
-    # from junction_map import junction_maplib
+    ## build hash map of genome-LTR junctions
     lib = junction_map("data/Glycine_GMR30/HL-2_S2_L001_R1_001.fastq","data/Glycine_GMR30/HL-2_S2_L001_R2_001.fastq","TGTTAGCCCATA",30,verbose=True)
 
-    ## test functions
-    lib.map_view(max_lines=20,feature='depth',view="head",max_char=100); print("")
+    ## look at head of library
+    lib.map_view(max_lines=20,feature='depth', view="head",max_char=100); print("")
     lib.map_view(max_lines=20,feature='depth', view="tail",max_char=100); print("")
-    print("Uniques: "+ str(lib.unique_count))
-    print("Duplicates: "+ str(lib.duplicate_count))
-    print("Total reads: "+str(lib.total_count))
+
+    ## remove poly-purine tract (TODO: identify better kill sequence)
+    lib.remove_junction("AATCGAAGCAGACATTTTTTGGGGGCAATT")
+
+    ## write FASTQ (one entry per junction)
+    lib.writeFASTQ()
+
+    ## write FASTA file containing sequence of flank (LTR removed)
+    lib.writeFlanks()
 
     ###### PROGRESS ######
-    ### *** = DO BEFORE NEXT MONDAY FOR PRESENTATION
-    ## TODO remove internal sequences (error sensitive) ***
-    #lib.remove_junction("Polypurine-Tract")
-
     ## TODO remove adapters ***
     #lib.remove_adapter("Adapter")
 
     ## TODO quality trim (skip for now)
     #lib.quality_trim()
-
-    ## TODO save features from junction map (skip for now)
-    #lib.save(mode="feature","depth","HL2.GMR30.junctions.depth.txt")
-    #lib.save(mode="feature","depth","HL2.GMR30.junctions.depth.ppt_removed.txt")
-    #lib.save(mode="feature","depth","HL2.GMR30.junctions.depth.ppt_removed.adapters_removed.txt")
-    #lib.save(mode="feature","flank_length","HL2.GMR30.junctions.flank_length.txt")
-    #lib.save(mode="feature","flank_length","HL2.GMR30.junctions.flank_length.ppt_removed.txt")
-    #lib.save(mode="feature","flank_length","HL2.GMR30.junctions.flank_length.ppt_removed.txt")
-
-    ## save map as FASTQ with & without LTR ***
-    #lib.save(mode="junction","HL2.GMR30.junctions.r1.FASTQ", "HL2.GMR30.junctions.r2.FASTQ")
-    #lib.save(mode="flanking","HL2.GMR30.flanking.r1.FASTQ","HL2.GMR30.flanking.r2.FASTQ")
 
     ## align junctions with bowtie ***
     ## add nearby genes with gtf file
