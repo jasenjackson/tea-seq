@@ -4,9 +4,9 @@ import os.path
 import itertools
 import sys
 from collections import defaultdict
-from io import *
+from io_utils import type_fa, type_fasta, fasta_check
 
-class redundancy_map():
+class RedundancyMap():
     """Redundancy maps organize redundant integration site data
        and store sequences representing non-redundant integrations.
        It assumes that the FASTA files it is built on contain

@@ -1,22 +1,28 @@
 import os
 
-from io import if_not_dir_make
+from io_utils import if_not_dir_make
 from feature_search import kmer_search
+from redundancy_map import RedundancyMap
 
-
+# TODO: if each library required a different feature file will require
+# a little bit of reworking. Use dictionary for lookup
 def make_libraries(results_dir, run_name, fastq_dir_dict, features, flash_exe):
     run_path = os.path.join(results_dir, run_name)
-    for identifier, fastq_files in fastq_dir_dict.items:
+    for identifier, fastq_files in fastq_dir_dict.items():
         library_path, made_dir = if_not_dir_make(run_path, identifier)
         # makes new directory in run_path
+        print(identifier)
+        
+        combined_reads, uncombined_reads = merge_reads(
+            fastq_files[0], fastq_files[1], library_path, flash_exe)
 
-        if made_dir:  # dir did not already exist
-            combined_reads, uncombined_reads = merge_reads(
-                fastq_files[0], fastq_files[1], library_path, flash_exe)
-
-            all_reads = collate(library_path, run_name,
+        all_reads = collate(library_path, run_name,
                                 combined_reads, uncombined_reads)
-            trimmed_reads = feature_trim(features, library_path, run_name, combined_reads)
+        print(combined_reads, '--------')
+        trimmed_reads = feature_trim(features, library_path, run_name, combined_reads)
+        remove_duplicates(library_path, run_name, trimmed_reads)
+            # passes to redund map but probably will need to pull out some
+            # file paths from here later
             
 
 
@@ -41,7 +47,7 @@ def merge_reads(r1,  r2, library_path, flash_exe):
 
     if not os.path.exists(FLASH_COMBINED):
         # run flash
-        cmd = '{}/./flash {} {} -d {} -M 250 --interleaved-output > {}'.format(
+        cmd = '{} {} {} -d {} -M 250 --interleaved-output > {}'.format(
             flash_exe, r1, r2, library_path, flash_log_path)
         os.system(cmd)
 
@@ -57,15 +63,16 @@ def collate(library_path, run_name, combined_flash_file, uncombined_flash_file):
     '''
     combined_file_path = os.path.join(
         library_path, '{}_combined.fastq'.format(run_name))
-    if not os.path.exists:  # files have not been combined
-        flash_combined_contents = open(combined_flash_file).readlines()
-        flash_uncombined_contents = open(uncombined_flash_file).readlines()
-        with open(combined_file_path, 'w') as cff:
-            cff.writelines(flash_combined_contents)
-            cff.writelines(flash_uncombined_contents)
+    
+    flash_combined_contents = open(combined_flash_file).readlines()
+    flash_uncombined_contents = open(uncombined_flash_file).readlines()
+    with open(combined_file_path, 'w') as cff:
+        cff.writelines(flash_combined_contents)
+        cff.writelines(flash_uncombined_contents)
 
     return combined_file_path
 
+from Bio import SeqIO
 
 def feature_trim(features, library_path, run_name, extended_file, end_size=20):
     # features come from params.csv
@@ -75,61 +82,52 @@ def feature_trim(features, library_path, run_name, extended_file, end_size=20):
     
     trimmed_file_path = os.path.join(
         library_path, '{}_trimmed.fasta'.format(run_name))
-    if os.path.exists(trimmed_file_path):
-        return 0  # check if already exists
-    else:
-        has_adapter, has_element, has_killSequence, is_trimmedLine = [False]*4
-        # set up some booleans
-        trimmed_line = ''
-        count, adapter_pos, adapter_dist, element_pos, element_dist = 0, -1, -1, -1, -1
-        with open(trimmed_file_path) as tfp:
-            with open(extended_file) as extendo:
-                while True:
-                    header = extendo.readline()  # read line of extendedFrags.fastq
-                    sequence = extendo.readline()  # read next line fasta format prob
-                    plusLine = extendo.readline()  # actuall a fastq
-                    quality = extendo.readline()
+   
+    has_adapter, has_element, has_killSequence, is_trimmedLine = [False]*4
+    # set up some booleans
+    trimmed_line = ''
+    count, adapter_pos, adapter_dist, element_pos, element_dist = 0, -1, -1, -1, -1
+    hits = []
+    with open(trimmed_file_path, 'w') as tfp:
+        for record in SeqIO.parse(extended_file, 'fastq'):
+            # keep for now convert to biopython later
+            sequence = record.seq
+            has_adapter, has_element, has_killSequence = False, False, False
+            # not sure why reassign here?
+            for feat in features:
+                feature, threshold, t= feat[1].strip(), feat[2].strip(), feat[3].strip()
+                if t == 'remove' and feature in record.seq:
+                    has_killSequence = True
+                    # search for kill seq motif
+                elif t == 'adapter':
+                    adapter_pos, adapter_dist = kmer_search(
+                        str(record.seq), feature, 6, 2)
+                adapter_len = len(feature)
+                if (adapter_pos != -1):
+                    has_adapter = True
+                elif (type == "element"):
+                    element_pos, element_dist = kmer_search(
+                        str(record.seq), feature, 3, 1)
+                    if (element_pos != -1):
+                        has_element = True
 
-                    # keep for now convert to biopython later
-
-                    if not quality:
-                        break  # end of file
-
-                    has_adapter, has_element, has_killSequence = False, False, False
-                    # not sure why reassign here?
-
-                    for feat in features:
-                        feature, threshold, t = feat[1], feat[2], feat[3]
-                        if t == 'remove' and feature in sequence:
-                            has_killSequence = True
-                            # search for kill seq motif
-                        elif t == 'adapter':
-                            adapter_pos, adapter_dist = kmer_search(
-                                sequence, feature, 6, 2)
-                        adapter_len = len(feature)
-                        if (adapter_pos != -1):
-                            has_adapter = True
-                        elif (type == "element"):
-                            element_pos, element_dist = kmer_search(
-                                sequence, feature, 3, 1)
-                            if (element_pos != -1):
-                                has_element = True
-
-                    # trim and store eligible sequences
-                    if ((has_killSequence == False) and (has_adapter == True) 
-                        and (has_element == True)):
-                        # print(count)
-                        adapter_end = adapter_pos+adapter_len
-                        trimmed_line = sequence[adapter_end:element_pos] + '\n'
-                        if len(trimmed_line) >= end_size:
-                            count += 1
-                            fasta_header = ">"+header
-                            new_entry = fasta_header+trimmed_line
-                            trimmed_file_path.write(new_entry)
-                            # need to open trimmed file path to write
+            # trim and store eligible sequences
+            if ((has_killSequence == False) and (has_adapter == True) 
+                and (has_element == True)):
+                # print(count)
+                adapter_end = adapter_pos+adapter_len
+                trimmed_line = str(sequence)[adapter_end:element_pos]
+                if len(trimmed_line) >= end_size:
+                    hits.append(record)  # save the record
+    SeqIO.write(hits, trimmed_file_path, 'fasta')                
+                    
     return trimmed_file_path
 
 
-def remove_duplicates():
-    pass
+def remove_duplicates(library_path, run_name, trimmed_file_path, endsize=20):
+    # create rendundancy map
+    rm = RedundancyMap(trimmed_file_path, endsize)
+    rm.print_map_head(10)
+    
+    
 # coming soon...

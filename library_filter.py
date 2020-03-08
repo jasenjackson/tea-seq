@@ -19,7 +19,7 @@ from io import if_not_dir_make
 def feature_trim(features, library_name, run_name, end_size):  # feature count, filture, trim
 
     # open library FASTQ file & create trimmed file
-    file_path = "results/"+run_name+'/'+library_name+"/out.extendedFrags.fastq"
+    file_path = "results/"+run_name+'/'+library_name+"/out.extendedFrags.fastq"  # extended file
     library_file = open(file_path, 'r')
     print("\tTrimming "+library_name+" with provided feature sequences...")
     trimmed_file_path = "results/"+run_name+"/" + \
