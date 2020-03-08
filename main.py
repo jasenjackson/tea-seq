@@ -5,7 +5,7 @@ Author: Jasen M. Jackson, Loyola '19
 Date: 2/20/19-
 This script contains the main workflow for the TEA-seq pipeline.
 '''
-#import numpy as np  # import numpy but not used
+import numpy as np
 #import pylab as py
 import glob
 import os
@@ -27,41 +27,41 @@ def validate_parameters():
         seq.append(kmers)
 
 
-def create_paths(run_name):
+def create_paths(run_name, results_path):
         # create results directory and results/run_name/ if they don't exist
-    if not os.path.exists("results"):
-        os.makedirs("results")
-    if not os.path.exists('results/' + run_name):
-        os.makedirs('results/' + run_name)
+    if not os.path.exists(results_path):
+        os.makedirs(results_path)
+    if not os.path.exists(os.path.join(results_path, run_name)):
+        os.makedirs(os.path.join(results_path, run_name))
 
 
 def create_library(r1, r2, library_name, run_name):
 
     # if the library ('results/run_name/library_name') already exists, move to next library.
-    if os.path.exists('results/' + run_name + "/" + library_name):
+    if os.path.exists('results/'+run_name+"/"+library_name):
         print(library_name +
               ' folder has already been created... skipping to required step!')
     else:
-        os.makedirs('results/' + run_name + "/" + library_name)
-        print(lt + 'Making ' + library_name + '...')
+        os.makedirs('results/'+run_name+"/"+library_name)
+        print(lt+'Making ' + library_name + '...')
     merge_reads(r1, r2, library_name, run_name, BIN_DIR, DATA_DIR)
     collate(library_name, run_name)
     #feature_count(FEATURES, library_name, run_name)
     feature_trim(FEATURES, library_name, run_name, 20)
     remove_duplicates(library_name, run_name, 20)
 
-
+RESULTS = '/home/ethan/Documents/Illumina_files/results'
 if __name__ == "__main__":
 
     # set logo type (lt) and run name variable
     lt = "[TEASEQ] "
     RUN_NAME = sys.argv[1]
 
-    print(lt + "Checking parameters...")
+    print(lt+"Checking parameters...")
     validate_parameters()
 
-    print(lt + "Creating required file paths...")
-    create_paths(RUN_NAME)
+    print(lt+"Creating required file paths...")
+    create_paths(RUN_NAME, RESULTS)
 
     print("Creating libraries...")
     # create library from each pair of fastq files...
