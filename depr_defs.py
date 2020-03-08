@@ -79,26 +79,3 @@ def remove_duplicates2(library_name, run_name):
 		print(unique_set[1:5])
 		print("\t\tdups: " + str(duplicate_count))
 		print("\t\tunique: " + str(len(unique_set)))
-
-def type_fa(path):
-    # boolean: path suffix is '.fasta'
-    if path[-3:].lower() == ".fa":
-        return True
-    else:
-        return False
-
-
-def type_fasta(path):
-    if path[-6:].lower() == ".fasta":
-        return True
-    else:
-        return False
-
-def fasta_check(path):
-    # check file for .fasta/.fa ending, get name of genome
-    fasta_check = type_fasta(path)
-    fa_check = type_fa(path)
-    if (fasta_check or fa_check):
-        return True
-    else:
-        return False
