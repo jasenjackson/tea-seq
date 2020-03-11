@@ -11,15 +11,14 @@ def make_libraries(results_dir, run_name, fastq_dir_dict, features, flash_exe):
     for identifier, fastq_files in fastq_dir_dict.items():
         library_path, made_dir = if_not_dir_make(run_path, identifier)
         # makes new directory in run_path
-        print(identifier)
-        
+        print('Merging Reads')
         combined_reads, uncombined_reads = merge_reads(
             fastq_files[0], fastq_files[1], library_path, flash_exe)
 
         all_reads = collate(library_path, run_name,
                                 combined_reads, uncombined_reads)
-        print(combined_reads, '--------')
-        trimmed_reads = feature_trim(features, library_path, run_name, combined_reads)
+        print('Trimming Reads')
+        trimmed_reads = feature_trim(features, library_path, run_name, all_reads)
         remove_duplicates(library_path, run_name, trimmed_reads)
             # passes to redund map but probably will need to pull out some
             # file paths from here later
@@ -73,7 +72,7 @@ def collate(library_path, run_name, combined_flash_file, uncombined_flash_file):
     return combined_file_path
 
 from Bio import SeqIO
-
+import time
 def feature_trim(features, library_path, run_name, extended_file, end_size=20):
     # features come from params.csv
     # library_path created for each library in the make libraries
@@ -88,8 +87,12 @@ def feature_trim(features, library_path, run_name, extended_file, end_size=20):
     trimmed_line = ''
     count, adapter_pos, adapter_dist, element_pos, element_dist = 0, -1, -1, -1, -1
     hits = []
+    # booleans are declared in the outer for loop inner loop goes around for
+    # each feature so if they are true for any feature booleans are
+    # iteritively changed to True
     with open(trimmed_file_path, 'w') as tfp:
-        for record in SeqIO.parse(extended_file, 'fastq'):
+        for i, record in enumerate(SeqIO.parse(extended_file, 'fastq')):
+            if i % 1000 == 0: print(i, 'records parsed')
             # keep for now convert to biopython later
             sequence = record.seq
             has_adapter, has_element, has_killSequence = False, False, False
@@ -102,19 +105,16 @@ def feature_trim(features, library_path, run_name, extended_file, end_size=20):
                 elif t == 'adapter':
                     adapter_pos, adapter_dist = kmer_search(
                         str(record.seq), feature, 6, 2)
-                adapter_len = len(feature)
-                if (adapter_pos != -1):
-                    has_adapter = True
-                elif (type == "element"):
+                    adapter_len = len(feature)
+                    if (adapter_pos != -1):
+                        has_adapter = True
+                elif t == "element":
                     element_pos, element_dist = kmer_search(
                         str(record.seq), feature, 3, 1)
                     if (element_pos != -1):
                         has_element = True
-
             # trim and store eligible sequences
-            if ((has_killSequence == False) and (has_adapter == True) 
-                and (has_element == True)):
-                # print(count)
+            if not has_killSequence and has_adapter and has_element:
                 adapter_end = adapter_pos+adapter_len
                 trimmed_line = str(sequence)[adapter_end:element_pos]
                 if len(trimmed_line) >= end_size:
