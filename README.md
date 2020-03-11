@@ -1,6 +1,23 @@
-# Sequencing and Analysis of Transposable-element Insertional Polymorphisms in Soybean [work in progress]
-This document contains the documentation for the analysis of transposable-element anchored PCR sequencing (tea-seq) data obtained by the method described in the following document:
-* https://docs.google.com/document/d/1z6l_yjRtnGkOStGcOwBBOVk0gpyeZiGODGK2Vp9sF5M/edit?usp=sharing
+# Targeted Sequencing of Retrotransposon Integrations in Soybean populations  [work in progress]
+We have developed a transposon-anchored PCR protocol which amplifies genomic regions flanking target retrotransposon families and subjects their amplicon libraries to Illumina sequencing. We have applied this protocol to create amplicon libraries representing GMR30 flanking regions in a variety of different Glycine max and Glycine soja cultivars.  (<a href="https://bit.ly/2WzWjmg">more info</a>).
+
+<center><a href = "https://github.com/jasenjackson/tea-seq/"><img src = "https://github.com/jasenjackson/tea-seq/blob/master/Screen%20Shot%202019-03-31%20at%204.18.19%20PM.png?raw=true"/></a></center>
+
+## Overview
+We have developed computational strategies to study the data produced by this protocol. First, sequencing reads are filtered, trimmed and aligned to a target reference genome for each amplicon library. The genomic context of each alignment is then assessed. Finally, these alignments are compared across sets of libraries.
+
+Our per-library computational mapping strategy can be summarized in 6 main steps. 
+1. Identify genome-LTR junctions from reads. 
+2. Remove junctions from internal regions.
+3. Trim splinkerette adapter from remaining sequences.
+4. Align junctions to reference genome using Bowtie2. 
+5. Re-align unsuccessful hits with LTR removed & identify non-repetitive alignments. 
+6. Identify genomic context & possible function for all successful hits.
+
+Our computational strategy for library comparisons can be summarized in 3 main steps. 
+1. Perform pair-wise comparison of non-repetitive hits for each pair of libraries. 
+2. Use hierarchical clustering to observe population structure. 
+3. Identify novel integrations that are over-represented in a cluster. 
 
 ## Cleaning up the FASTQ libraries
 The first step in the analysis is to process the raw paired-end read FASTQ files for  for each amplicon library. This can be accomplished using the 'library_filter.py' script. This is still a work in progress, but it has multiple steps:
@@ -34,7 +51,7 @@ The 'BLAST_parser_TE_families.py' script parses these results and stores the ID 
 ## Align non-nested flanking sequences to the reference genome
 The genome of the Williams 82 soybean cultivar has been sequenced and uploaded to NCBI. We can align our non-nested flanking sequences directly to the reference genome. To do this, it may be easier to download the reference genome as a FASTA file, convert it into a BLAST database and use the non-nested flanking sequence FASTA file as a query. The 'BLAST_parser_ref_seq.py' script was written to parse these results. It outputs the chromosome and position of a top alignment from each non-nested flanking sequence, along with whether or not the sequence aligned within 10kbp of a gene. The 'chromosome_ideogram.R' script takes these positions and plots them, giving a visualization that looked like the following.
 
-![non-nested gMR30](https://github.com/jasenjackson/tea-seq/blob/master/non-nested-GMR30-sites-HL2.png?raw=true)
+![non-nested gMR30](https://github.com/jasenjackson/tea-seq/blob/master/sample_plot.png?raw=true)
       
 ## Generate a list of "known" locations for your transposon family of interest
 It would be helpful to know if our amplicon libraries contain all of the previously annotated family members. It is also very likely that the current reference genome does not have every family member, and we would like to know if our methods have uncovered new members/integration sites. We have a database containing the names and positions of each member of each retrotransposon family (with sequences and descriptions), but the positions are for the old soybean reference assembly. We need to translate these positions to the new assembly! 
