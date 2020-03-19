@@ -4,10 +4,17 @@ from io_utils import if_not_dir_make
 from feature_search import kmer_search
 from redundancy_map import RedundancyMap
 
+from Bio import SeqIO
+from Bio.Seq import Seq
+
 # TODO: if each library required a different feature file will require
 # a little bit of reworking. Use dictionary for lookup
+
+
 def make_libraries(results_dir, run_name, fastq_dir_dict, features, flash_exe):
     run_path = os.path.join(results_dir, run_name)
+    filtered_fastas = []
+
     for identifier, fastq_files in fastq_dir_dict.items():
         library_path, made_dir = if_not_dir_make(run_path, identifier)
         # makes new directory in run_path
@@ -16,14 +23,19 @@ def make_libraries(results_dir, run_name, fastq_dir_dict, features, flash_exe):
             fastq_files[0], fastq_files[1], library_path, flash_exe)
 
         all_reads = collate(library_path, run_name,
-                                combined_reads, uncombined_reads)
+                            combined_reads, uncombined_reads)
         print('Trimming Reads')
-        trimmed_reads = feature_trim(features, library_path, run_name, all_reads)
-        remove_duplicates(library_path, run_name, trimmed_reads)
-            # passes to redund map but probably will need to pull out some
-            # file paths from here later
-            
-
+        trimmed_reads = feature_trim(
+            features, library_path, run_name, all_reads)
+        
+        filtered_fastas.append((library_path, remove_duplicates(
+            library_path, run_name, trimmed_reads)))
+        
+    
+    return filtered_fastas
+        # remove duplicates returns file path to filtered fasta file
+        # passes to redund map but probably will need to pull out some
+        # file paths from here later
 
 
 def merge_reads(r1,  r2, library_path, flash_exe):
@@ -62,7 +74,7 @@ def collate(library_path, run_name, combined_flash_file, uncombined_flash_file):
     '''
     combined_file_path = os.path.join(
         library_path, '{}_combined.fastq'.format(run_name))
-    
+
     flash_combined_contents = open(combined_flash_file).readlines()
     flash_uncombined_contents = open(uncombined_flash_file).readlines()
     with open(combined_file_path, 'w') as cff:
@@ -71,17 +83,16 @@ def collate(library_path, run_name, combined_flash_file, uncombined_flash_file):
 
     return combined_file_path
 
-from Bio import SeqIO
-import time
+
 def feature_trim(features, library_path, run_name, extended_file, end_size=20):
     # features come from params.csv
     # library_path created for each library in the make libraries
     # function
     # extended file coming from merge reads function originally
-    
+
     trimmed_file_path = os.path.join(
         library_path, '{}_trimmed.fasta'.format(run_name))
-   
+
     has_adapter, has_element, has_killSequence, is_trimmedLine = [False]*4
     # set up some booleans
     trimmed_line = ''
@@ -92,13 +103,15 @@ def feature_trim(features, library_path, run_name, extended_file, end_size=20):
     # iteritively changed to True
     with open(trimmed_file_path, 'w') as tfp:
         for i, record in enumerate(SeqIO.parse(extended_file, 'fastq')):
-            if i % 1000 == 0: print(i, 'records parsed')
+            if i % 10000 == 0:
+                print(i, 'records parsed')
             # keep for now convert to biopython later
             sequence = record.seq
             has_adapter, has_element, has_killSequence = False, False, False
             # not sure why reassign here?
             for feat in features:
-                feature, threshold, t= feat[1].strip(), feat[2].strip(), feat[3].strip()
+                feature, threshold, t = feat[1].strip(
+                ), feat[2].strip(), feat[3].strip()
                 if t == 'remove' and feature in record.seq:
                     has_killSequence = True
                     # search for kill seq motif
@@ -118,16 +131,20 @@ def feature_trim(features, library_path, run_name, extended_file, end_size=20):
                 adapter_end = adapter_pos+adapter_len
                 trimmed_line = str(sequence)[adapter_end:element_pos]
                 if len(trimmed_line) >= end_size:
+                    record.letter_annotations = {}
+                    record.seq = Seq(trimmed_line)  # cast back to seq object
                     hits.append(record)  # save the record
-    SeqIO.write(hits, trimmed_file_path, 'fasta')                
-                    
+    SeqIO.write(hits, trimmed_file_path, 'fasta')
+    
+    # redundancy stuff I think is causing the issues look into that later
+
     return trimmed_file_path
 
 
 def remove_duplicates(library_path, run_name, trimmed_file_path, endsize=20):
-    # create rendundancy map
+    # create rendundancy map return filtered fasta file path
     rm = RedundancyMap(trimmed_file_path, endsize)
-    rm.print_map_head(10)
-    
-    
+    return rm.out
+
+
 # coming soon...

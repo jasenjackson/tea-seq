@@ -40,8 +40,9 @@ class RedundancyMap():
             outfile = open(self.out, 'w')
             features = self.get_features(self.rm, 'header', 'sequence')
             for i in range(len(self.rm)):
-                outfile.write(features[0][i]+'\n')
-                outfile.write(features[1][i]+'\n')
+                if features[1][i] and len(features[1][i]) >= 20:
+                    outfile.write(features[0][i]+'\n')
+                    outfile.write(features[1][i]+'\n')
         else: print(err+"could not create redundancy map")
 
     def rm_add(self, seq, seq_len, header, map, end_size):

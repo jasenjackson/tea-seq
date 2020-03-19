@@ -27,6 +27,9 @@ def set_args():
     parser.add_argument('-m', help='If a directory is given to -f need a csv file \
                         that maps the indentifier prefix to a specific feature \
                         (params) file.')
+    parser.add_argument('-b', help='Path to BlAST database')
+    parser.add_argument('-g', help='Path to .gff file of genes')
+    parser.add_argument('-a', help='Path to chr_2_acc file for the supplied blast database')
     args = parser.parse_args()
 
     # check results dir exists and if not make
