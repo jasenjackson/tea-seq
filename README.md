@@ -1,4 +1,4 @@
-# Targeted Sequencing of Retrotransposon Integrations in Soybean populations  [work in progress]
+# Targeted Sequencing of Retrotransposon Integrations in Soybean populations
 We have developed a transposon-anchored PCR protocol which amplifies genomic regions flanking target retrotransposon families and subjects their amplicon libraries to Illumina sequencing. We have applied this protocol to create amplicon libraries representing GMR30 flanking regions in a variety of different Glycine max and Glycine soja cultivars.  (<a href="https://bit.ly/2WzWjmg">more info</a>).
 
 <center><a href = "https://github.com/jasenjackson/tea-seq/"><img src = "https://github.com/jasenjackson/tea-seq/blob/master/Screen%20Shot%202019-03-31%20at%204.18.19%20PM.png?raw=true"/></a></center>
