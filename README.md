@@ -17,7 +17,7 @@ Our per-library computational mapping strategy can be summarized in 6 main steps
 Our computational strategy for library comparisons can be summarized in 3 main steps. 
 1. Perform pair-wise comparison of non-repetitive hits for each pair of libraries. 
 2. Use hierarchical clustering to observe population structure. 
-3. Identify novel integrations that are over-represented in a cluster. 
+3. Identify novel integrations that are over-represented in a cluster, using a hyper-geometric test. 
 
 ## Cleaning up the FASTQ libraries
 The first step in the analysis is to process the raw paired-end read FASTQ files for  for each amplicon library. This can be accomplished using the 'library_filter.py' script. This is still a work in progress, but it has multiple steps:
