@@ -4,9 +4,9 @@ import os.path
 import itertools
 import sys
 from collections import defaultdict
-from io import *
+from io_utils import type_fa, type_fasta, fasta_check
 
-class redundancy_map():
+class RedundancyMap():
     """Redundancy maps organize redundant integration site data
        and store sequences representing non-redundant integrations.
        It assumes that the FASTA files it is built on contain
@@ -40,8 +40,9 @@ class redundancy_map():
             outfile = open(self.out, 'w')
             features = self.get_features(self.rm, 'header', 'sequence')
             for i in range(len(self.rm)):
-                outfile.write(features[0][i]+'\n')
-                outfile.write(features[1][i]+'\n')
+                if features[1][i] and len(features[1][i]) >= 20:
+                    outfile.write(features[0][i]+'\n')
+                    outfile.write(features[1][i]+'\n')
         else: print(err+"could not create redundancy map")
 
     def rm_add(self, seq, seq_len, header, map, end_size):
